@@ -5,7 +5,9 @@ class ScheduleApis {
     }
 
     doSearchLocations(location, cb) {
-        fetch(this.createUrl('location/search?q=' + location))
+        fetch(this.createUrl('location/search?q=' + location), {
+            credentials: 'include'
+        })
             .then(function (response) {
                 return response.json();
             })
@@ -15,7 +17,9 @@ class ScheduleApis {
     doJourneyElementsSearch(departureDate, searchType, serviceDescription, departureStation, cb) {
         fetch(this.createUrl('schedule/journey-elements?date=' + departureDate +
             '&' + searchType + '=' + serviceDescription +
-            '&departureStation=' + departureStation))
+            '&departureStation=' + departureStation), {
+            credentials: 'include'
+        })
             .then(function (response) {
                 return response.json();
             })
@@ -25,7 +29,9 @@ class ScheduleApis {
     doScheduleSearch(departureDate, searchType, serviceDescription, departureStation, cb) {
         fetch(this.createUrl('schedule?date=' + departureDate +
             '&' + searchType + '=' + serviceDescription +
-            '&departureStation=' + departureStation))
+            '&departureStation=' + departureStation), {
+            credentials: 'include'
+        })
             .then(function (response) {
                 return response.json();
             })
