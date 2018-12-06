@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Train schedule search</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <script src="jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+
+    <!-- bootstrap -->
+    <script src="bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+</head>
+<body onload="init()">
+
+<style>
+    #timetable {
+        width: 50%;
+    }
+
+    #search {
+        max-width: 500px;
+        margin-bottom: 30px;
+    }
+
+    .table-serviceInfo {
+        font-size: 10px;
+    }
+</style>
+
+<script src="schedule-apis.js" integrity="sha384-1RohWLfTLeR2JsR6YkgRjcohSp0IuyTtngFWD0CKfmW0JKC2tI8C/RPaIw1TL3aH"
+        crossorigin="anonymous"></script>
+<script>
+    const apis = new ScheduleApis();
+
+    function init() {
+        document.querySelector("#stationInput")
+            .addEventListener("change", function () {
+                var station = document.getElementById("stationInput").value;
+                if (station.length >= 3) {
+                    fillStationDropDown(station);
+                }
+            });
+    }
+
+    function clearElement(el) {
+        while (el.hasChildNodes()) {
+            el.removeChild(el.lastChild);
+        }
+    }
+
+    function fillStationDropDown(station) {
+        var stationList = document.getElementById('stationList');
+        apis.doSearchLocations(station, function (locations) {
+            clearElement(stationList);
+
+            if (locations.length == 1) {
+                populateStationInput(locations[0].tiploc);
+                clearElement(stationList);
+            } else {
+                locations.forEach(location => {
+                    /*
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <h5 class="mb-1">Newcastle</h5>
+                            <div class="  ">
+                                <p class="mb-1">NWCSTLE</p>
+                                <small>NCL</small>
+                                <small>12931</small>
+                            </div>
+                        </a>
+                     */
+
+                    var descriptionEl = document.createElement('h5');
+                    descriptionEl.className = 'mb-1';
+                    descriptionEl.appendChild(document.createTextNode(location.description));
+
+                    var tiplocEl = document.createElement('p');
+                    tiplocEl.className = 'mb-1';
+                    tiplocEl.appendChild(document.createTextNode(location.tiploc));
+
+                    var crsCode = document.createElement('small');
+                    crsCode.appendChild(document.createTextNode(location.shortCode));
+
+                    var stanoxCode = document.createElement('small');
+                    stanoxCode.appendChild(document.createTextNode(location.stanox));
+
+                    var codesContainer = document.createElement('div');
+                    codesContainer.classList.add('d-flex');
+                    codesContainer.classList.add('w-100');
+                    codesContainer.classList.add('justify-content-between');
+
+                    codesContainer.appendChild(tiplocEl);
+                    codesContainer.appendChild(stanoxCode);
+                    codesContainer.appendChild(crsCode);
+
+                    var stationDescription = document.createElement('a');
+                    stationDescription.classList.add('list-group-item');
+                    stationDescription.classList.add('list-group-item-action');
+                    stationDescription.classList.add('flex-column');
+                    stationDescription.classList.add('align-items-start');
+                    stationDescription.href = '#';
+                    stationDescription.onclick = function (e) {
+                        populateStationInput(location.tiploc);
+                        clearElement(stationList);
+                    };
+
+                    stationDescription.appendChild(descriptionEl);
+                    stationDescription.appendChild(codesContainer);
+
+                    stationList.appendChild(stationDescription);
+                });
+            }
+        });
+    }
+
+    function populateStationInput(station) {
+        document.getElementById('stationInput')
+            .value = station;
+    }
+
+    function populateJourneyElements(journeyElements) {
+        var scheduleResult = document.getElementById('schedule')
+        while (scheduleResult.hasChildNodes()) {
+            scheduleResult.removeChild(scheduleResult.lastChild);
+        }
+
+        if (journeyElements.length > 0) {
+            document.getElementById('timetable').hidden = false;
+        } else {
+            document.getElementById('timetable').hidden = true;
+        }
+
+        journeyElements.forEach(journeyElement => {
+            var locationName = document.createElement('td');
+            locationName.appendChild(document.createTextNode(journeyElement.locationName));
+
+            var scheduledArrival = document.createElement('td');
+            scheduledArrival.appendChild(document.createTextNode(journeyElement.scheduledArrivalTime));
+
+            var scheduledPass = document.createElement('td');
+            scheduledPass.appendChild(document.createTextNode(journeyElement.scheduledPassTime));
+
+            var scheduledDeparture = document.createElement('td');
+            scheduledDeparture.appendChild(document.createTextNode(journeyElement.scheduledDepartureTime));
+
+            var platform = document.createElement('td');
+            if (journeyElement.platform) {
+                platform.appendChild(document.createTextNode(journeyElement.platform));
+            }
+
+            var row = document.createElement("tr");
+            if (journeyElement.calls === 'Y') {
+                row.className += "table-success";
+            } else {
+                row.className += "table-light";
+            }
+
+            row.appendChild(locationName);
+            row.appendChild(scheduledArrival);
+            row.appendChild(scheduledPass);
+            row.appendChild(scheduledDeparture);
+            row.appendChild(platform);
+
+            scheduleResult.appendChild(row);
+        });
+    }
+
+    function populateServiceInfo(schedule) {
+        var scheduleData = schedule[0];
+        if (scheduleData) {
+            document.querySelectorAll('#serviceInfo td[id]').forEach(e => {
+                clearElement(e);
+            });
+
+            document.getElementById('scheduleUid')
+                .appendChild(document.createTextNode(scheduleData.scheduleUid));
+            document.getElementById('trainIdentity')
+                .appendChild(document.createTextNode(scheduleData.trainIdentity));
+            document.getElementById('headCode')
+                .appendChild(document.createTextNode(scheduleData.headCode));
+            document.getElementById('serviceCode')
+                .appendChild(document.createTextNode(scheduleData.serviceCode));
+            document.getElementById('powerType')
+                .appendChild(document.createTextNode(scheduleData.powerType));
+            document.getElementById('maxSpeed')
+                .appendChild(document.createTextNode(scheduleData.maxSpeed));
+            if (scheduleData.trainOperator) {
+                document.getElementById('operator')
+                    .appendChild(document.createTextNode(scheduleData.trainOperator.name));
+                document.getElementById('atoc')
+                    .appendChild(document.createTextNode(scheduleData.trainOperator.atocCode));
+            }
+        }
+    }
+
+    function searchSchedule() {
+        var currentDate = new Date().toISOString().substring(0, 10);
+        var serviceDescription = encodeURIComponent(document.getElementById("serviceDescriptionInput").value);
+        var departureStation = encodeURIComponent(document.getElementById("stationInput").value);
+        var searchType = encodeURIComponent(document.querySelector("#trainIdentityTypeInput input[type=radio]:checked").value);
+
+        apis.doJourneyElementsSearch(currentDate, searchType, serviceDescription, departureStation,
+            populateJourneyElements);
+        apis.doScheduleSearch(currentDate, searchType, serviceDescription, departureStation,
+            populateServiceInfo);
+    }
+</script>
+
+<div class="container">
+    <h1>Train schedule search</h1>
+
+    <div id="search">
+        <form id="search-form">
+            <div class="form-group">
+                <label for="stationInput">Station</label>
+                <input id="stationInput" type="text" value="" class="form-control" aria-describedby="stationHelp"
+                       placeholder="Station" aria-haspopup="true" aria-expanded="false"/>
+                <small id="stationHelp" class="form-text text-muted">Enter the name, TIPLOC, CRS or STANOX code of the
+                    station where the train starts or calls (passes are not included).
+                </small>
+                <div id="stationList" class="list-group"></div>
+            </div>
+
+            <div id="trainIdentityTypeInput" class="form-group">
+                <div>
+                    <label for="trainIdentityTypeInput">Service description type</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="trainIdentityTypeInput"
+                           id="trainIdentityTypeInput1" value="departureTime">
+                    <label class="form-check-label" for="trainIdentityTypeInput1">Departure time</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="trainIdentityTypeInput"
+                           id="trainIdentityTypeInput2" value="trainUid">
+                    <label class="form-check-label" for="trainIdentityTypeInput2">Schedule UID</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="trainIdentityTypeInput"
+                           id="trainIdentityTypeInput3" value="trainIdentity">
+                    <label class="form-check-label" for="trainIdentityTypeInput3">Train identity</label>
+                </div>
+                <small id="trainIdentityTypeHelp" class="form-text text-muted">Select the type of service description
+                    entered below.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="serviceDescriptionInput">Service description</label>
+                <input id="serviceDescriptionInput" type="text" value="" class="form-control"
+                       aria-describedby="serviceDescriptionHelp" placeholder="Station"/>
+                <small id="serviceDescriptionHelp" class="form-text text-muted">Enter the service identifier: this can
+                    be a departure time, schedule UID or train identity.
+                </small>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-lg" onclick="searchSchedule()">Search</button>
+        </form>
+    </div>
+
+    <div id="timetable" hidden>
+        <table class="table table-bordered table-sm table-serviceInfo">
+            <thead class="thead-dark">
+                <th colspan="4">Service information</th>
+            </thead>
+            <tbody id="serviceInfo">
+                <tr>
+                    <td>Schedule Uid</td>
+                    <td id="scheduleUid"></td>
+                    <td>Train identity</td>
+                    <td id="trainIdentity"></td>
+                </tr>
+                <tr>
+                    <td>Service code</td>
+                    <td id="serviceCode"></td>
+                    <td>Head code</td>
+                    <td id="headCode"></td>
+                </tr>
+                <tr>
+                    <td>Power type</td>
+                    <td id="powerType"></td>
+                    <td>Maximum speed</td>
+                    <td id="maxSpeed"></td>
+                </tr>
+                <tr>
+                    <td>Operator name</td>
+                    <td id="operator"></td>
+                    <td>Operator ATOC</td>
+                    <td id="atoc"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="table table-bordered table-hover table-sm">
+            <thead class="thead-dark">
+            <tr>
+                <th>Location</th>
+                <th>Arrives</th>
+                <th>Passes</th>
+                <th>Departs</th>
+                <th>Platform</th>
+            </tr>
+            </thead>
+            <tbody id="schedule">
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
