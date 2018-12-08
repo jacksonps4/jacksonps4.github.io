@@ -1,6 +1,6 @@
 class ScheduleApis {
     createUrl(path) {
-        return 'https://embarcadero.pv.indigenously.net:16081/refdata/api/'
+        return 'https://www.indigenously.co.uk/refdata/api/'
             .concat(path);
     }
 
