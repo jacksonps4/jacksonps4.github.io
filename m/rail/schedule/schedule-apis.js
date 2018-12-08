@@ -29,7 +29,7 @@ class ScheduleApis {
     doScheduleSearch(departureDate, searchType, serviceDescription, departureStation, cb) {
         fetch(this.createUrl('schedule?date=' + departureDate +
             '&' + searchType + '=' + serviceDescription +
-            '&departureStation=' + departureStation), {
+            '&departureStation=' + departureStation + '&exactTime=false'), {
             credentials: 'include'
         })
             .then(function (response) {
