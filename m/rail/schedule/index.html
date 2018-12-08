@@ -36,7 +36,7 @@
     }
 </style>
 
-<script src="schedule-apis.js" integrity="sha384-gPvSzeL7afDkYOkyKbfBAjLBucXCik95Js2wtkSs+C1wpPS9EHARPJL/u8AX7x1j"
+<script src="schedule-apis.js" integrity="sha384-5IDUMWf7gG4RELAJoyviCuXRG9LNILTzIKyO4UgZVHMfvb9Ud39OZpWnWnfqakF1"
         crossorigin="use-credentials"></script>
 <script>
     const apis = new ScheduleApis();
@@ -128,9 +128,7 @@
 
     function populateJourneyElements(journeyElements) {
         var scheduleResult = document.getElementById('schedule')
-        while (scheduleResult.hasChildNodes()) {
-            scheduleResult.removeChild(scheduleResult.lastChild);
-        }
+        clearElement(scheduleResult);
 
         if (journeyElements.length > 0) {
             document.getElementById('timetable').hidden = false;
@@ -173,31 +171,75 @@
         });
     }
 
-    function populateServiceInfo(schedule) {
-        var scheduleData = schedule[0];
-        if (scheduleData) {
-            document.querySelectorAll('#serviceInfo td[id]').forEach(e => {
-                clearElement(e);
-            });
+    function populateServiceInfo(schedules) {
+        document.getElementById('timetables').hidden = true;
+        document.getElementById('timetable').hidden = true;
 
-            document.getElementById('scheduleUid')
-                .appendChild(document.createTextNode(scheduleData.scheduleUid));
-            document.getElementById('trainIdentity')
-                .appendChild(document.createTextNode(scheduleData.trainIdentity));
-            document.getElementById('headCode')
-                .appendChild(document.createTextNode(scheduleData.headCode));
-            document.getElementById('serviceCode')
-                .appendChild(document.createTextNode(scheduleData.serviceCode));
-            document.getElementById('powerType')
-                .appendChild(document.createTextNode(scheduleData.powerType));
-            document.getElementById('maxSpeed')
-                .appendChild(document.createTextNode(scheduleData.maxSpeed));
-            if (scheduleData.trainOperator) {
-                document.getElementById('operator')
-                    .appendChild(document.createTextNode(scheduleData.trainOperator.name));
-                document.getElementById('atoc')
-                    .appendChild(document.createTextNode(scheduleData.trainOperator.atocCode));
+        if (schedules.length == 1) {
+            document.getElementById('timetable').hidden = false;
+
+            var scheduleData = schedules[0];
+            if (scheduleData) {
+                document.querySelectorAll('#serviceInfo td[id]').forEach(e => {
+                    clearElement(e);
+                });
+
+                document.getElementById('scheduleUid')
+                    .appendChild(document.createTextNode(scheduleData.scheduleUid));
+                document.getElementById('trainIdentity')
+                    .appendChild(document.createTextNode(scheduleData.trainIdentity));
+                document.getElementById('headCode')
+                    .appendChild(document.createTextNode(scheduleData.headCode));
+                document.getElementById('serviceCode')
+                    .appendChild(document.createTextNode(scheduleData.serviceCode));
+                document.getElementById('powerType')
+                    .appendChild(document.createTextNode(scheduleData.powerType));
+                document.getElementById('maxSpeed')
+                    .appendChild(document.createTextNode(scheduleData.maxSpeed));
+                if (scheduleData.trainOperator) {
+                    document.getElementById('operator')
+                        .appendChild(document.createTextNode(scheduleData.trainOperator.name));
+                    document.getElementById('atoc')
+                        .appendChild(document.createTextNode(scheduleData.trainOperator.atocCode));
+                }
+
+                apis.doJourneyElementsSearch(scheduleData.serviceRunDate, 'trainUid', scheduleData.scheduleUid,
+                    scheduleData.originTiploc, populateJourneyElements);
             }
+        } else if (schedules.length > 1) {
+            document.getElementById('timetables').hidden = false;
+
+            var serviceList = document.getElementById('serviceList');
+            clearElement(serviceList);
+
+            schedules.forEach(schedule => {
+                var scheduleUid = document.createElement('td');
+                scheduleUid.appendChild(document.createTextNode(schedule.scheduleUid));
+
+                var origin = document.createElement('td');
+                origin.appendChild(document.createTextNode(schedule.originLocation.description));
+
+                var departureTime = document.createElement('td');
+                departureTime.appendChild(document.createTextNode(schedule.originDepartureTime));
+
+                var destination = document.createElement('td');
+                destination.appendChild(document.createTextNode(schedule.destinationLocation.description));
+
+                var trainIdentity = document.createElement('td');
+                trainIdentity.appendChild(document.createTextNode(schedule.trainIdentity));
+
+                var scheduleRow = document.createElement('tr');
+                scheduleRow.appendChild(scheduleUid);
+                scheduleRow.appendChild(origin);
+                scheduleRow.appendChild(departureTime);
+                scheduleRow.appendChild(destination);
+                scheduleRow.appendChild(trainIdentity);
+                scheduleRow.addEventListener('click', e => {
+                    apis.doScheduleSearch(schedule.serviceRunDate, 'trainUid', schedule.scheduleUid, schedule.originTiploc,
+                        populateServiceInfo);
+                });
+                serviceList.appendChild(scheduleRow);
+            });
         }
     }
 
@@ -207,8 +249,6 @@
         var departureStation = encodeURIComponent(document.getElementById("stationInput").value);
         var searchType = encodeURIComponent(document.querySelector("#trainIdentityTypeInput input[type=radio]:checked").value);
 
-        apis.doJourneyElementsSearch(currentDate, searchType, serviceDescription, departureStation,
-            populateJourneyElements);
         apis.doScheduleSearch(currentDate, searchType, serviceDescription, departureStation,
             populateServiceInfo);
     }
@@ -266,8 +306,24 @@
         </form>
     </div>
 
+    <div id="timetables" hidden>
+        <table class="table table-bordered table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Schedule UID</th>
+                    <th>Origin</th>
+                    <th>Time</th>
+                    <th>Destination</th>
+                    <th>Train identity</th>
+                </tr>
+            </thead>
+            <tbody id="serviceList">
+            </tbody>
+        </table>
+    </div>
+
     <div id="timetable" hidden>
-        <table class="table table-bordered table-sm table-serviceInfo">
+        <table class="table table-bordered table-sm table-hover table-serviceInfo">
             <thead class="thead-dark">
                 <th colspan="4">Service information</th>
             </thead>
