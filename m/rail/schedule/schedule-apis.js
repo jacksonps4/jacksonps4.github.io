@@ -26,10 +26,10 @@ class ScheduleApis {
             .then(cb);
     }
 
-    doScheduleSearch(departureDate, searchType, serviceDescription, departureStation, cb) {
+    doScheduleSearch(departureDate, searchType, serviceDescription, departureStation, cb, exactTime) {
         fetch(this.createUrl('schedule?date=' + departureDate +
             '&' + searchType + '=' + serviceDescription +
-            '&departureStation=' + departureStation + '&exactTime=false'), {
+            '&departureStation=' + departureStation + (exactTime ? ( '&exactTime=' + exactTime ) : '&exactTime=false')), {
             credentials: 'include'
         })
             .then(function (response) {

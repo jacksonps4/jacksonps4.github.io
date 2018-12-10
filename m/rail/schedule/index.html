@@ -36,7 +36,7 @@
     }
 </style>
 
-<script src="schedule-apis.js" integrity="sha384-BszLtZEYZ/4DWhjVt6baeWOP3kv0dJyA60guSb6FYvdZmMVoc1d/ORJJaW75THMN"
+<script src="schedule-apis.js" integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4QqQ"
         crossorigin="use-credentials"></script>
 
 <script>
@@ -241,17 +241,27 @@
                 });
                 serviceList.appendChild(scheduleRow);
             });
+        } else {
+            if (document.getElementById('timetable').dataset.exact) {
+                searchScheduleExact(false);
+            }
         }
     }
 
-    function searchSchedule() {
-        var currentDate = new Date().toISOString().substring(0, 10);
-        var serviceDescription = encodeURIComponent(document.getElementById("serviceDescriptionInput").value);
-        var departureStation = encodeURIComponent(document.getElementById("stationInput").value);
-        var searchType = encodeURIComponent(document.querySelector("#trainIdentityTypeInput input[type=radio]:checked").value);
+    function searchScheduleExact(exact) {
+        document.getElementById('timetable').dataset.exact = exact;
+
+        let currentDate = new Date().toISOString().substring(0, 10);
+        let serviceDescription = encodeURIComponent(document.getElementById("serviceDescriptionInput").value);
+        let departureStation = encodeURIComponent(document.getElementById("stationInput").value);
+        let searchType = encodeURIComponent(document.querySelector("#trainIdentityTypeInput input[type=radio]:checked").value);
 
         apis.doScheduleSearch(currentDate, searchType, serviceDescription, departureStation,
-            populateServiceInfo);
+            populateServiceInfo, exact);
+    }
+
+    function searchSchedule() {
+        searchScheduleExact(true);
     }
 </script>
 
