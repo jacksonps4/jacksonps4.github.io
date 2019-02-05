@@ -50,6 +50,14 @@
                     fillStationDropDown(station);
                 }
             });
+
+        document.querySelector("#serviceDescriptionInput")
+            .addEventListener("change", function () {
+                var serviceDescription = document.getElementById("serviceDescriptionInput").value;
+                if (serviceDescription.length >= 4) {
+                    parseServiceDescription(serviceDescription);
+                }
+            });
     }
 
     function clearElement(el) {
@@ -120,6 +128,38 @@
                 });
             }
         });
+    }
+
+    function parseServiceDescription(serviceDescription) {
+        if (/^[0-9]{4}$/.test(serviceDescription)) {
+            // departure time
+            document.getElementById("trainIdentityTypeInput1").checked = true;
+            document.getElementById("trainIdentityTypeInput2").checked = false;
+            document.getElementById("trainIdentityTypeInput3").checked = false;
+
+            document.getElementById('trainIdentityTypeInput').hidden = true;
+            console.log("departure time");
+        } else if (/^[0-9A-Z]{4}$/.test(serviceDescription)) {
+            // train identity
+            document.getElementById("trainIdentityTypeInput1").checked = false;
+            document.getElementById("trainIdentityTypeInput2").checked = false;
+            document.getElementById("trainIdentityTypeInput3").checked = true;
+
+            document.getElementById('trainIdentityTypeInput').hidden = true;
+            console.log("train identity");
+        } else if (/^[A-Z][0-9]{4,6}$/.test(serviceDescription)) {
+            // schedule uid
+            document.getElementById("trainIdentityTypeInput1").checked = false;
+            document.getElementById("trainIdentityTypeInput2").checked = true;
+            document.getElementById("trainIdentityTypeInput3").checked = false;
+
+            document.getElementById('trainIdentityTypeInput').hidden = true;
+            console.log("schedule id");
+        } else {
+            // display the drop-down
+            document.getElementById('trainIdentityTypeInput').hidden = false;
+            console.log("other");
+        }
     }
 
     function populateStationInput(station) {
@@ -280,7 +320,16 @@
                 <div id="stationList" class="list-group"></div>
             </div>
 
-            <div id="trainIdentityTypeInput" class="form-group">
+            <div class="form-group">
+                <label for="serviceDescriptionInput">Service description</label>
+                <input id="serviceDescriptionInput" type="text" value="" class="form-control"
+                       aria-describedby="serviceDescriptionHelp" placeholder="Station"/>
+                <small id="serviceDescriptionHelp" class="form-text text-muted">Enter the service identifier: this can
+                    be a departure time, schedule UID or train identity.
+                </small>
+            </div>
+
+            <div id="trainIdentityTypeInput" class="form-group" hidden>
                 <div>
                     <label for="trainIdentityTypeInput">Service description type</label>
                 </div>
@@ -301,15 +350,6 @@
                 </div>
                 <small id="trainIdentityTypeHelp" class="form-text text-muted">Select the type of service description
                     entered below.
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="serviceDescriptionInput">Service description</label>
-                <input id="serviceDescriptionInput" type="text" value="" class="form-control"
-                       aria-describedby="serviceDescriptionHelp" placeholder="Station"/>
-                <small id="serviceDescriptionHelp" class="form-text text-muted">Enter the service identifier: this can
-                    be a departure time, schedule UID or train identity.
                 </small>
             </div>
 
