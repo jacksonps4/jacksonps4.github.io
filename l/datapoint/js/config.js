@@ -1,9 +1,9 @@
 require.config({
     'paths': {
-        'angular': '/common/js/angular.min',
-        'jquery': '/common/js/jquery-2.1.0',
-        'bootstrap': '/common/js/bootstrap',
-        'common': '/common/js',
+        'angular': 'common/js/angular.min',
+        'jquery': 'common/js/jquery-2.1.0',
+        'bootstrap': 'common/js/bootstrap',
+        'common': 'common/js',
     },
     'shim': {
         'angular': {
