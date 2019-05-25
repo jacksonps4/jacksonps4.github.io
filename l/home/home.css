@@ -1,0 +1,51 @@
+.temperature {
+  font-size: 18pt;
+  font-weight: bold;
+  color: white;
+}
+
+.pressure {
+  font-size: 18pt;
+  font-weight: bold;
+}
+
+.actions {
+  font-size: 18pt;
+  font-weight: bold;
+  display: inline;
+}
+
+.labels {
+  font-size: 18pt;
+  width: 150px;
+  display: inline-block;
+}
+
+#readings {
+  font-size: 18pt;
+  width: 100px;
+  display: inline-block;
+}
+
+.trend {
+  float: right;
+}
+
+.temperature-freezing {
+  background-color: blue;
+}
+.temperature-cold {
+  background-color: lightgreen;
+}
+.temperature-moderate {
+  background-color: green;
+}
+.temperature-warm {
+  background-color: yellow;
+}
+.temperature-hot {
+  background-color: orange;
+}
+.temperature-veryhot {
+  background-color: red;
+}
