@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Met Office Weather data</title>
+
+<script src="https://maps.google.com/maps/api/js?sensor=false&key=AIzaSyBy-Jdya7QzYT-nE7xDrpgdaeulXNOEQq4" type="text/javascript"></script>
+<script data-main="js/config.js" src="../common/js/require.js"></script>
+<script src="/common/highcharts-4.2.3/js/highcharts.js"></script>
+<script src="/common/highcharts-4.2.3/js/highcharts-more.js"></script>
+<script src="/common/highcharts-4.2.3/js/modules/exporting.js"></script>
+
+<link rel="stylesheet" href="/common/css/bootstrap.css" />
+<link rel="stylesheet" href="/common/fonts/dejavu.css" />
+
+<link rel="stylesheet" href="css/datapoint.css" />
+</head>
+<body>
+<h2>Met Office Datapoint</h2>
+
+<ul class="nav nav-tabs">
+  <li><a href="#/">Home</a></li>
+  <li><a href="#/search">Recent observations</a></li>
+  <li><a href="#/locations">Locations</a></li>
+</ul>
+
+<p>The Met Office provides weather data for the UK.</p>
+
+<div data-ng-view=""></div>
+
+<div>
+<small>
+Contains public sector information licensed under the 
+<a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence</a>.
+</small>
+</div>
+</body>
+</html>

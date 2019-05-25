@@ -1,0 +1,20 @@
+.trainSummary {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 9pt;
+}
+
+.hotelSummary {
+  margin-bottom: 5px;
+  font-size: 9pt;
+}
+
+.tripSummary {
+    border: 1px solid black;
+    margin-bottom: 10px;
+    padding: 1px;
+}
+
+#analytics {
+    margin-bottom: 20px;
+}

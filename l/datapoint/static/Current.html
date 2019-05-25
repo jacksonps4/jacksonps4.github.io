@@ -1,0 +1,47 @@
+<div id="parent" style="width: 100%">
+    <div id="temperature" style="float:left; display: inline; width: 200px; height: 100%;"></div>
+    <div id="pressure" style="float:left; display: inline; width: 200px; height: 100%;"></div>
+    <div id="windSpeed" style="float:left; display: inline; width: 200px; height: 100%;"></div>
+    <div id="humidity" style="float:left; display: inline; width: 200px; height: 100%;"></div>
+</div>
+
+<div>
+    <table class="table table-striped table-condensed">
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Temperature</th>
+            <th>Visibility</th>
+            <th>Visibility description</th>
+            <th>Wind direction</th>
+            <th>Wind speed</th>
+            <th>Wind Gust</th>
+            <th>Weather type</th>
+            <th>Pressure mB</th>
+            <th>Pressure inHg</th>
+            <th>Pressure tendency</th>
+            <th>Dewpoint</th>
+            <th>Humidity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{latestObservation.time | date : 'yyyy-MM-dd HHmm'}}</td>
+            <td>{{latestObservation.location.name}}</td>
+            <td>{{latestObservation.temperature}}</td>
+            <td>{{latestObservation.visibility}}</td>
+            <td>{{latestObservation.visibilityDescription}}</td>
+            <td>{{latestObservation.windDirection}}</td>
+            <td>{{latestObservation.windSpeed}}</td>
+            <td>{{latestObservation.windGust}}</td>
+            <td>{{latestObservation.weatherTypeDescription}}</td>
+            <td>{{latestObservation.pressure}}</td>
+            <td>{{latestObservation.pressureInHg | number : 2}}</td>
+            <td>{{latestObservation.pressureTendency}}</td>
+            <td>{{latestObservation.dewPoint}}</td>
+            <td>{{latestObservation.screenRelativeHumidity}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
