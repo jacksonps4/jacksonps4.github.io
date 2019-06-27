@@ -1,7 +1,6 @@
 class OperationalApis {
     createUrl(path) {
-        //return 'https://www.indigenously.co.uk/operational/api/v1/'
-        return 'https://embarcadero.pv.indigenously.net:14081/operational/api/v1/'
+        return 'https://www.indigenously.co.uk/operational/api/v1/'
             .concat(path);
     }
 
