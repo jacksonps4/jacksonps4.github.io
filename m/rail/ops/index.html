@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rail Operational Data</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="ops.css">
+
+    <script src="d3.v5.min.js"></script>
+</head>
+<body onload="init()">
+    <div>
+        <label for="areas">Describer area</label>
+        <select id="areas" onchange="updateAreas()">
+        </select>
+    </div>
+    <div>
+        <h2>Area map</h2>
+        <svg width="512" height="6000" id="network"></svg>
+    </div>
+    <script src="operational-apis.js" crossorigin="use-credentials"></script>
+    <script>
+        var apis = new OperationalApis();
+
+        function init() {
+            getAreas();
+        }
+
+        function getAreas() {
+            apis.getAreas(function(areas) {
+                d3.select('#areas')
+                    .selectAll('option')
+                    .data(areas)
+                    .enter()
+                    .append('option')
+                    .text(function(d, i) { return d });
+            });
+        }
+
+        function updateAreas() {
+            const areas = document.getElementById("areas");
+            if (areas.selectedIndex == -1) {
+                return;
+            }
+
+            const selectedArea = areas.options[areas.selectedIndex].text;
+
+            apis.getAreaStatus(selectedArea, function(area) {
+                const describers = area.describers;
+                const allBerths = Object.keys(describers);
+                var evenBerths = [];
+                var oddBerths = [];
+                for (var b in allBerths) {
+                    var berthId = allBerths[b];
+                    var berth = {
+                        berthId: berthId,
+                        describer: describers[berthId]
+                    };
+                    if ((berthId % 2) == 0) {
+                        evenBerths.push(berth);
+                    } else {
+                        oddBerths.push(berth);
+                    }
+                }
+                const comparator = (a, b) => a.berthId - b.berthId;
+                evenBerths.sort(comparator);
+                oddBerths.sort(comparator);
+
+                const spacing = 35;
+                const radius = 15;
+
+                d3.select('#network')
+                    .selectAll('circle.upBerth')
+                    .data(evenBerths)
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'upBerth')
+                    .attr('fill', '#17a2b8')
+                    .attr('r', radius)
+                    .attr('cx', '100')
+                    .attr('cy', function(d, i) { return 100 + (i * spacing); } );
+
+                d3.select('#network')
+                    .selectAll('text.upBerth')
+                    .data(evenBerths)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'upBerth')
+                    .attr('dx', '125')
+                    .attr('dy', function(d, i) { return 100 + (i * spacing) + (radius / 3); } )
+                    .text(function(d, i) { return d.berthId; });
+
+                d3.select('#network')
+                    .selectAll('text.upDescriber')
+                    .data(evenBerths)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'upDescriber')
+                    .attr('fill', '#90ee7e')
+                    .attr('dx', '90')
+                    .attr('dy', function(d, i) { return 100 + (i * spacing) + (radius / 3); } )
+                    .text(function(d, i) { return d.describer; });
+
+
+                d3.select('#network')
+                    .selectAll('circle.downBerth')
+                    .data(oddBerths)
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'downBerth')
+                    .attr('fill', '#17a2b8')
+                    .attr('r', radius)
+                    .attr('cx', '450')
+                    .attr('cy', function(d, i) { return 100 + (i * spacing); } );
+
+                d3.select('#network')
+                    .selectAll('text.downBerth')
+                    .data(oddBerths)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'downBerth')
+                    .attr('dx', '475')
+                    .attr('dy', function(d, i) { return 100 + (i * spacing) + (radius / 3); } )
+                    .text(function(d, i) { return d.berthId; });
+
+                d3.select('#network')
+                    .selectAll('text.downDescriber')
+                    .data(oddBerths)
+                    .enter()
+                    .append('text')
+                    .attr('fill', '#90ee7e')
+                    .attr('class', 'downDescriber')
+                    .attr('dx', '440')
+                    .attr('dy', function(d, i) { return 100 + (i * spacing) + (radius / 3); } )
+                    .text(function(d, i) { return d.describer; });
+            });
+        }
+    </script>
+</body>
+</html>
