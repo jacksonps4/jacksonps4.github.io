@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Transaction search</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <script src="jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+
+    <!-- bootstrap -->
+    <script src="bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+</head>
+<body onload="init()">
+
+<style>
+</style>
+
+<!--
+integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4QqQ"
+-->
+<script src="fin-apis.js"
+        crossorigin="use-credentials"></script>
+
+<script>
+    const apis = new FinApis();
+
+    function clearElement(el) {
+        while (el.hasChildNodes()) {
+            el.removeChild(el.lastChild);
+        }
+    }
+
+    function init() {
+        apis.getRecentTransactions(transactions => {
+            var recentTransactions = document.getElementById('transactions')
+            clearElement(recentTransactions);
+
+            if (transactions.length > 0) {
+                document.getElementById('transactions').hidden = false;
+            } else {
+                document.getElementById('transactions').hidden = true;
+            }
+
+            transactions.forEach(transaction => {
+                var date = document.createElement('td');
+                date.appendChild(document.createTextNode(transaction.transactionTime));
+
+                var detail = transaction.counterparty;
+
+                var amount = document.createElement('td');
+                var amt = transaction.amount.toFixed(2);
+                if (amt < 0) {
+                    amount.className += 'table-danger';
+                }
+                if (transaction.currency !== 'GBP') {
+
+                }
+                amount.appendChild(document.createTextNode(amt));
+
+                var currency = document.createElement('td');
+                currency.appendChild(document.createTextNode(transaction.currency));
+
+                var spendingCategory = document.createElement('td');
+                spendingCategory.appendChild(document.createTextNode(transaction.spendingCategory));
+
+                var row = document.createElement("tr");
+                if (transaction.status === 'PENDING') {
+                    row.className += "table-secondary";
+                }
+                if (transaction.status === 'REVERSED') {
+                    row.className += "table-info";
+                }
+
+                var txDetails = document.createElement('td');
+                txDetails.appendChild(document.createTextNode(detail));
+
+                row.appendChild(date);
+                row.appendChild(txDetails);
+                row.appendChild(amount);
+                row.appendChild(currency);
+                row.appendChild(spendingCategory);
+
+                recentTransactions.appendChild(row);
+            });
+        });
+    }
+
+</script>
+
+<div class="container">
+    <h1>Recent transactions</h1>
+
+    <div>
+        <table class="table table-bordered table-hover table-sm">
+            <thead class="thead-dark">
+            <tr>
+                <th>Date</th>
+                <th>Counterparty</th>
+                <th>Amount</th>
+                <th>Currency</th>
+                <th>Category</th>
+            </tr>
+            </thead>
+            <tbody id="transactions">
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
