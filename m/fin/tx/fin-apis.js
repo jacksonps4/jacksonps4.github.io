@@ -5,7 +5,7 @@ class FinApis {
     }
 
     getRecentTransactions(cb) {
-        fetch(this.createUrl('transactions/recent'), {
+        fetch(this.createUrl('/transactions/recent'), {
             credentials: 'include'
         })
             .then(function (response) {
