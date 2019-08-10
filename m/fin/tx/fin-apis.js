@@ -13,4 +13,14 @@ class FinApis {
             })
             .then(cb);
     }
+
+    getMonthlySpending(cb) {
+        fetch(this.createUrl('/spending/current-month'), {
+            credentials: 'include'
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
 }
