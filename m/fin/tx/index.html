@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
+    <link href="https://fonts.googleapis.com/css?family=Special+Elite&display=swap" rel="stylesheet">
+
     <script src="jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
@@ -25,6 +27,9 @@
 <body onload="init()">
 
 <style>
+    table tbody tr td, table thead tr th {
+        font-family: 'Special Elite', cursive;
+    }
 </style>
 
 <!--
@@ -164,7 +169,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <table class="table table-bordered table-hover table-sm">
+            <table class="table table-hover table-sm table-responsive">
                 <thead class="thead-dark">
                 <tr>
                     <th>Date</th>
