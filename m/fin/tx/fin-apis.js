@@ -45,9 +45,10 @@ class FinApis {
     }
 
     requestTransactionUpdate(uid, cb) {
-        var form = new FormData();
+        let form = new FormData();
         form.set('uid', uid);
-
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
         let options = {
             method: 'PUT',
             mode: 'cors',
@@ -55,10 +56,8 @@ class FinApis {
             headers: headers,
             body: form
         };
+
         let req = new Request(this.createUrl('/transactions/refresh'), options);
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/x-www-form-urlencoded');
-        
         fetch(req)
             .then(function (response) {
                 return response.json();
