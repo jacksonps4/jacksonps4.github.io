@@ -1,6 +1,6 @@
 class FinApis {
     createUrl(path) {
-        return 'https://embarcadero.pv.indigenously.net:16081/finman/api'
+        return 'https://www.indigenously.co.uk/finman/api'
             .concat(path);
     }
 
