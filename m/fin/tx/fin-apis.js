@@ -48,6 +48,7 @@ class FinApis {
         var form = new FormData();
         form.set('uid', uid);
         fetch(this.createUrl('/transactions/refresh'), {
+            mode: 'cors',
             credentials: 'include',
             method: 'PUT',
             headers: {
