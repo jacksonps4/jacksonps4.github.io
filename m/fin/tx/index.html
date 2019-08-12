@@ -35,6 +35,11 @@
         max-width: 500px;
         max-height: 500px;
     }
+
+    .sync {
+        height: 18px;
+        width: 18px;
+    }
 </style>
 
 <!--
@@ -53,6 +58,20 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     }
 
     function init() {
+        loadTransactions();
+        loadMonthsDropDown();
+        loadMonthlyChart();
+        bindRefreshButton();
+    }
+
+    function bindRefreshButton() {
+        var refreshButton = document.getElementById('refresh');
+        refreshButton.addEventListener('click', e => {
+            loadTransactions();
+        });
+    }
+
+    function loadTransactions() {
         apis.getRecentTransactions(transactions => {
             var recentTransactions = document.getElementById('transactions')
             clearElement(recentTransactions);
@@ -96,18 +115,28 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
                 var txDetails = document.createElement('td');
                 txDetails.appendChild(document.createTextNode(detail));
 
+                var refresh = document.createElement('td');
+                var refreshGlyph = document.createElement('img');
+                refreshGlyph.setAttribute('class', 'sync');
+                refreshGlyph.setAttribute('src', 'sync.png');
+                refresh.appendChild(refreshGlyph);
+
                 row.appendChild(date);
                 row.appendChild(txDetails);
                 row.appendChild(amount);
                 row.appendChild(currency);
                 row.appendChild(spendingCategory);
+                row.appendChild(refresh);
 
                 recentTransactions.appendChild(row);
+
+                refresh.addEventListener('click', e => {
+                    apis.requestTransactionUpdate(transaction.uid, tx => {
+                        loadTransactions();
+                    });
+                });
             });
         });
-
-        loadMonthsDropDown();
-        loadMonthlyChart();
     }
 
     function loadMonthsDropDown() {
@@ -229,6 +258,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     </ul>
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active table-responsive" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <button id="refresh" type="button" class="btn btn-secondary">Refresh</button>
             <table class="table table-hover table-sm">
                 <thead class="thead-dark">
                 <tr>
@@ -237,6 +267,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
                     <th>Amount</th>
                     <th>Currency</th>
                     <th>Category</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody id="transactions">
@@ -245,9 +276,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         </div>
         <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
             <label for="months">Month: </label>
-            <select id="months">
-                <option value="current">Current</option>
-            </select>
+            <select id="months"></select>
 
             <canvas id="monthlySpending" width="400" height="400"></canvas>
         </div>

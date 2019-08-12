@@ -43,4 +43,19 @@ class FinApis {
             })
             .then(cb);
     }
+
+    requestTransactionUpdate(uid, cb) {
+        fetch(this.createUrl('/transactions/refresh'), {
+            credentials: 'include',
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'uid=' + uid
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
 }
