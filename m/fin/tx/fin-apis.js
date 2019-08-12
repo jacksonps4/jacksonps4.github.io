@@ -1,6 +1,6 @@
 class FinApis {
     createUrl(path) {
-        return 'https://www.indigenously.co.uk/finman/api'
+        return 'https://embarcadero.pv.indigenously.net:16081/finman/api'
             .concat(path);
     }
 
@@ -45,8 +45,6 @@ class FinApis {
     }
 
     requestTransactionUpdate(uid, cb) {
-        let form = new FormData();
-        form.append('uid', uid);
         let headers = new Headers();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         let options = {
@@ -54,7 +52,7 @@ class FinApis {
             mode: 'cors',
             credentials: 'include',
             headers: headers,
-            body: form
+            body: 'uid=' + uid
         };
 
         let req = new Request(this.createUrl('/transactions/refresh'), options);
