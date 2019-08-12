@@ -45,13 +45,15 @@ class FinApis {
     }
 
     requestTransactionUpdate(uid, cb) {
+        var form = new FormData();
+        form.set('uid', uid);
         fetch(this.createUrl('/transactions/refresh'), {
             credentials: 'include',
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: 'uid=' + uid
+            body: form
         })
             .then(function (response) {
                 return response.json();
