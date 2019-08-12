@@ -23,4 +23,24 @@ class FinApis {
             })
             .then(cb);
     }
+
+    getAvailableMonths(cb) {
+        fetch(this.createUrl('/spending/statement-months'), {
+            credentials: 'include'
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
+
+    getMonthlySpendingForPeriod(month, year, cb) {
+        fetch(this.createUrl('/spending/year/' + year + '/month/' + month), {
+            credentials: 'include'
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
 }
