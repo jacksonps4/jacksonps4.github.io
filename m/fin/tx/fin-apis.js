@@ -46,7 +46,7 @@ class FinApis {
 
     requestTransactionUpdate(uid, cb) {
         let form = new FormData();
-        form.set('uid', uid);
+        form.append('uid', uid);
         let headers = new Headers();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         let options = {
