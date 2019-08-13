@@ -59,7 +59,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     function init() {
         loadTransactions();
         loadMonthsDropDown();
-        loadMonthlyChart();
+        loadMonthlySpendingChart();
         bindRefreshButton();
         loadSpendingAnalysis();
     }
@@ -159,7 +159,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         });
     }
 
-    function loadMonthlySpendingChart(labels, data) {
+    function createMonthlySpendingChart(labels, data) {
         var ctx = document.getElementById('monthlySpending');
         var monthlySpending = new Chart(ctx, {
             type: 'bar',
@@ -214,16 +214,62 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         return monthlySpending;
     };
 
-    function loadMonthlyChart() {
+    function loadMonthlySpendingChart() {
         apis.getMonthlySpending(monthlySpending => {
-            var labels = [];
-            var data = [];
+            var spendingLabels = [];
+            var spendingData = [];
             monthlySpending.spendingCategoryLineItems.forEach(item => {
-                labels.push(item.category);
-                data.push(item.amount < 0 ? item.amount * -1 : item.amount);
+                if (item.category !== 'INCOME') {
+                    spendingLabels.push(item.category);
+                    spendingData.push(item.amount * -1);
+                }
             });
-            loadMonthlySpendingChart(labels, data);
+            createMonthlySpendingChart(spendingLabels, spendingData);
+
+            var income = 0;
+            var expenses = 0;
+            monthlySpending.spendingCategoryLineItems.forEach(item => {
+                if (item.amount < 0) {
+                    expenses += ( item.amount * -1 );
+                } else {
+                    income += item.amount;
+                }
+            });
+            createMonthlyIncomeExpenseChart(income, expenses)
         });
+    }
+
+    function createMonthlyIncomeExpenseChart(income, expenses) {
+        var ctx = document.getElementById('monthlyIncomeExpense');
+        var monthlyIncomeExpense = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [ 'Income', 'Expenses' ],
+                datasets: [{
+                    label: 'Amount',
+                    data: [ income, expenses ],
+                    backgroundColor: [
+                        'rgba(255, 0, 0, 0.2)',
+                        'rgba(0, 255, 0, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 0, 0, 1)',
+                        'rgba(0, 255, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+        return monthlyIncomeExpense;
     }
 
     function loadMonthlyChartForSpecificMonth(month, year) {
@@ -236,7 +282,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
                 labels.push(item.category);
                 data.push(item.amount < 0 ? item.amount * -1 : item.amount);
             });
-            loadMonthlySpendingChart(labels, data);
+            createMonthlySpendingChart(labels, data);
         });
     }
 
@@ -321,6 +367,8 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
             <select id="months"></select>
 
             <canvas id="monthlySpending" width="400" height="400"></canvas>
+
+            <canvas id="monthlyIncomeExpense" width="400" height="400"></canvas>
         </div>
         <div class="tab-pane fade" id="annual" role="tabpanel" aria-labelledby="annual-tab">
             <table class="table table-hover table-sm">
