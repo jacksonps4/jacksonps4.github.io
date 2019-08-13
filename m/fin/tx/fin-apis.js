@@ -44,6 +44,16 @@ class FinApis {
             .then(cb);
     }
 
+    getAnalysis(cb) {
+        fetch(this.createUrl('/spending/analysis'), {
+            credentials: 'include'
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
+
     requestTransactionUpdate(uid, cb) {
         let headers = new Headers();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
