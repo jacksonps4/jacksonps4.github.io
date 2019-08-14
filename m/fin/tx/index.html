@@ -161,6 +161,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
 
     function createMonthlySpendingChart(labels, data) {
         var ctx = document.getElementById('monthlySpending');
+        clearElement(ctx);
         var monthlySpending = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -255,6 +256,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
 
     function createMonthlyIncomeExpenseChart(income, expenses) {
         var ctx = document.getElementById('monthlyIncomeExpense');
+        clearElement(ctx);
         var monthlyIncomeExpense = new Chart(ctx, {
             type: 'bar',
             data: {
