@@ -214,28 +214,42 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         return monthlySpending;
     };
 
+    function loadMonthlySpendingCategoryChart(monthlySpending) {
+        var spendingLabels = [];
+        var spendingData = [];
+        monthlySpending.spendingCategoryLineItems.forEach(item => {
+            if (item.category !== 'INCOME') {
+                spendingLabels.push(item.category);
+                spendingData.push(item.amount * -1);
+            }
+        });
+        createMonthlySpendingChart(spendingLabels, spendingData);
+    }
+
+    function loadMonthlyIncomeExpensesChart(monthlySpending) {
+        var income = 0;
+        var expenses = 0;
+        monthlySpending.spendingCategoryLineItems.forEach(item => {
+            if (item.amount < 0) {
+                expenses += ( item.amount * -1 );
+            } else {
+                income += item.amount;
+            }
+        });
+        createMonthlyIncomeExpenseChart(income, expenses)
+    }
+
     function loadMonthlySpendingChart() {
         apis.getMonthlySpending(monthlySpending => {
-            var spendingLabels = [];
-            var spendingData = [];
-            monthlySpending.spendingCategoryLineItems.forEach(item => {
-                if (item.category !== 'INCOME') {
-                    spendingLabels.push(item.category);
-                    spendingData.push(item.amount * -1);
-                }
-            });
-            createMonthlySpendingChart(spendingLabels, spendingData);
+            loadMonthlySpendingCategoryChart(monthlySpending);
+            loadMonthlyIncomeExpensesChart(monthlySpending);
+        });
+    }
 
-            var income = 0;
-            var expenses = 0;
-            monthlySpending.spendingCategoryLineItems.forEach(item => {
-                if (item.amount < 0) {
-                    expenses += ( item.amount * -1 );
-                } else {
-                    income += item.amount;
-                }
-            });
-            createMonthlyIncomeExpenseChart(income, expenses)
+    function loadMonthlyChartForSpecificMonth(month, year) {
+        apis.getMonthlySpendingForPeriod(month, year, monthlySpending => {
+            loadMonthlySpendingCategoryChart(monthlySpending);
+            loadMonthlyIncomeExpensesChart(monthlySpending);
         });
     }
 
@@ -270,20 +284,6 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
             }
         });
         return monthlyIncomeExpense;
-    }
-
-    function loadMonthlyChartForSpecificMonth(month, year) {
-        loadMonthsDropDown();
-
-        apis.getMonthlySpendingForPeriod(month, year, monthlySpending => {
-            var labels = [];
-            var data = [];
-            monthlySpending.spendingCategoryLineItems.forEach(item => {
-                labels.push(item.category);
-                data.push(item.amount < 0 ? item.amount * -1 : item.amount);
-            });
-            createMonthlySpendingChart(labels, data);
-        });
     }
 
     function loadSpendingAnalysis() {
