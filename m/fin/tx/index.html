@@ -39,6 +39,10 @@
         height: 18px;
         width: 18px;
     }
+
+    #transactionPagination {
+        float: right;
+    }
 </style>
 
 <!--
@@ -48,6 +52,18 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         crossorigin="use-credentials"></script>
 
 <script>
+    /*
+     * TODO:
+     *   - Add pagination to transaction feed page
+     *     o Add page parameter to recent transaction endpoint
+     *   - Add search to transaction feed page which updates charts
+     *     o Add transaction search endpoint with pagination
+     *     o Add pagination UI elements and bind
+     *   - Encapsulate code here into class to avoid it being at the top-level in the DOM
+     *   - Move document.getElementById calls outside of functions
+     *   - Add expenses category and income/expense charts to transaction feed page
+     *
+     */
     const apis = new FinApis();
 
     function clearElement(el) {
@@ -71,11 +87,43 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         });
     }
 
+    function loadTransactionPagination(currentPage, pagesAvailable) {
+        var pagination = document.getElementById('transactionPagination');
+        pagination.hidden = pagesAvailable && pagesAvailable.length == 0;
+
+        function createPage(page, label) {
+            let pageElement = document.createElement('li');
+            pageElement.className = 'page-item';
+            let pageLink = document.createElement('a');
+            pageLink.className = 'page-link';
+            pageLink.href = '?page=' + page;
+            if (currentPage === page) {
+                pageElement.setAttribute('aria-current', 'page');
+                pageElement.className = pageElement.className.concat(' active');
+            }
+            pageLink.appendChild(document.createTextNode(label ? label : page));
+            pageElement.appendChild(pageLink);
+            return pageElement;
+        }
+
+        var pages = document.getElementById('txPages');
+        clearElement(pages);
+
+        for (i = 0; i < pagesAvailable.length; i++) {
+            pages.appendChild(createPage(i));
+        }
+    }
+
     function loadTransactions() {
-        apis.getRecentTransactions(transactions => {
+        apis.getRecentTransactions(transactionResponse => {
             var recentTransactions = document.getElementById('transactions')
             clearElement(recentTransactions);
 
+            let currentPage = transactionResponse.page;
+            let pages = transactionResponse.pagesAvailable;
+            loadTransactionPagination(currentPage, pages);
+
+            let transactions = transactionResponse.results;
             if (transactions.length > 0) {
                 document.getElementById('transactions').hidden = false;
             } else {
@@ -349,6 +397,12 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active table-responsive" id="home" role="tabpanel" aria-labelledby="home-tab">
             <button id="refresh" type="button" class="btn btn-secondary">Refresh</button>
+            <div id="transactionPagination">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination" id="txPages">
+                    </ul>
+                </nav>
+            </div>
             <table class="table table-hover table-sm">
                 <thead class="thead-dark">
                 <tr>
