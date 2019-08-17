@@ -4,8 +4,12 @@ class FinApis {
             .concat(path);
     }
 
-    getRecentTransactions(cb) {
-        fetch(this.createUrl('/transactions/recent'), {
+    getRecentTransactions(cb, page) {
+        var url = this.createUrl('/transactions/recent');
+        if (page) {
+            url = url.concat('?page=' + page);
+        }
+        fetch(url, {
             credentials: 'include'
         })
             .then(function (response) {
