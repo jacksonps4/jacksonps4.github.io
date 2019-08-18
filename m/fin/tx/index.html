@@ -65,6 +65,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
      *
      */
     const apis = new FinApis();
+    const state = {};
 
     function clearElement(el) {
         while (el.hasChildNodes()) {
@@ -91,6 +92,20 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         var pagination = document.getElementById('transactionPagination');
         pagination.hidden = pagesAvailable && pagesAvailable.length == 0;
 
+        function createNavigation(label, action) {
+            let pageElement = document.createElement('li');
+            pageElement.className = 'page-item';
+            let pageLink = document.createElement('a');
+            pageLink.className = 'page-link';
+            pageLink.href = '#';
+            pageLink.addEventListener('click', e => {
+                action();
+            });
+            pageLink.appendChild(document.createTextNode(label));
+            pageElement.appendChild(pageLink);
+            return pageElement;
+        }
+
         function createPage(page, label) {
             let pageElement = document.createElement('li');
             pageElement.className = 'page-item';
@@ -112,8 +127,25 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         var pages = document.getElementById('txPages');
         clearElement(pages);
 
-        for (i = 0; i < pagesAvailable.length; i++) {
+        if (pagesAvailable.length > 5) {
+            if (!state.range) {
+                state.range = 0;
+            }
+            if (state.range > 0) {
+                pages.appendChild(createNavigation('Previous', () => {
+                    state.range--;
+                    loadTransactionPagination(currentPage, pagesAvailable);
+                }));
+            }
+        }
+        for (i = state.range * 5; i < (state.range + 5); i++) {
             pages.appendChild(createPage(i));
+        }
+        if ((state.range * 5) <= pagesAvailable.length) {
+            pages.appendChild(createNavigation('Next', () => {
+                state.range++;
+                loadTransactionPagination(currentPage, pagesAvailable);
+            }));
         }
     }
 
