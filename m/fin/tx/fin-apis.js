@@ -18,6 +18,16 @@ class FinApis {
             .then(cb);
     }
 
+    getBalance(cb) {
+        fetch(this.createUrl('/transactions/balance'), {
+            credentials: 'include'
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
+
     getMonthlySpending(cb) {
         fetch(this.createUrl('/spending/current-month'), {
             credentials: 'include'

@@ -54,8 +54,6 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
 <script>
     /*
      * TODO:
-     *   - Add pagination to transaction feed page
-     *     o Add page parameter to recent transaction endpoint
      *   - Add search to transaction feed page which updates charts
      *     o Add transaction search endpoint with pagination
      *     o Add pagination UI elements and bind
@@ -74,6 +72,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     }
 
     function init() {
+        loadBalances();
         loadTransactions();
         loadMonthsDropDown();
         loadMonthlySpendingChart();
@@ -85,6 +84,17 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         var refreshButton = document.getElementById('refresh');
         refreshButton.addEventListener('click', e => {
             loadTransactions();
+        });
+    }
+
+    function loadBalances() {
+        let balances = document.getElementById('balances');
+        apis.getBalance(balances => {
+            let cleared = document.getElementById('clearedBalance')
+            cleared.appendChild(document.createTextNode(balances.clearedBalance));
+
+            let uncleared = document.getElementById('unclearedBalance');
+            uncleared.appendChild(document.createTextNode(balances.unclearedBalance));
         });
     }
 
@@ -433,6 +443,8 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active table-responsive" id="home" role="tabpanel" aria-labelledby="home-tab">
             <button id="refresh" type="button" class="btn btn-secondary">Refresh</button>
+            Cleared balance: <span id="clearedBalance"></span>
+            Uncleared balance: <span id="unclearedBalance"></span>
             <div id="transactionPagination">
                 <nav aria-label="Page navigation">
                     <ul class="pagination" id="txPages">
