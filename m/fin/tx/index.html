@@ -43,6 +43,11 @@
     #transactionPagination {
         float: right;
     }
+
+    .balance {
+        font-weight: bolder;
+        margin-left: 20px;
+    }
 </style>
 
 <!--
@@ -66,8 +71,8 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active table-responsive" id="home" role="tabpanel" aria-labelledby="home-tab">
             <button id="refresh" type="button" class="btn btn-secondary">Refresh</button>
-            Cleared balance: <span id="clearedBalance"></span>
-            Uncleared balance: <span id="unclearedBalance"></span>
+            <span class="balance">Cleared balance: </span><span id="clearedBalance"></span>
+            <span class="balance">Uncleared balance: </span><span id="unclearedBalance"></span>
             <div id="transactionPagination">
                 <nav aria-label="Page navigation">
                     <ul class="pagination" id="txPages">
