@@ -348,28 +348,13 @@ class TransactionsApp {
                 var category = document.createElement('td');
                 category.appendChild(document.createTextNode(lineItem.spendingCategory));
 
-                var min = document.createElement('td');
-                var minAmt = lineItem.min.toFixed(2);
-                min.appendChild(document.createTextNode(minAmt));
-
-                var max = document.createElement('td');
-                var maxAmnt = lineItem.max.toFixed(2);
-                max.appendChild(document.createTextNode(maxAmnt));
-
                 var mean = document.createElement('td');
                 var meanAmnt = lineItem.mean.toFixed(2);
                 mean.appendChild(document.createTextNode(meanAmnt));
 
-                var stddev = document.createElement('td');
-                var stddevAmnt = lineItem.standardDeviation.toFixed(2);
-                stddev.appendChild(document.createTextNode(stddevAmnt));
-
                 var row = document.createElement("tr");
                 row.appendChild(category);
-                row.appendChild(min);
-                row.appendChild(max);
                 row.appendChild(mean);
-                row.appendChild(stddev);
 
                 analysis.appendChild(row);
             });
