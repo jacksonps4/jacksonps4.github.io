@@ -29,7 +29,9 @@ class TransactionsApp {
         this.loadMonthsDropDown(monthlySpendingChartContainer, incomeExpenseChartContainer, monthsDropDown);
 
         let refreshButton = document.getElementById('refresh');
-        this.bindRefreshButton(refreshButton, pagination, txPages, recentTransactions);
+        this.bindRefreshButton(refreshButton,
+            () => this.loadTransactions(pagination, txPages, recentTransactions),
+            () => this.loadBalances(cleared, uncleared));
 
         let analysis = document.getElementById('analysis')
         this.loadSpendingAnalysis(analysis);
@@ -41,9 +43,10 @@ class TransactionsApp {
         }
     }
 
-    bindRefreshButton(refreshButton, pagination, txPages, recentTransactions) {
+    bindRefreshButton(refreshButton, loadTransactions, loadBalances) {
         refreshButton.addEventListener('click', e => {
-            this.loadTransactions(pagination, txPages, recentTransactions);
+            loadTransactions();
+            loadBalances();
         });
     }
 
