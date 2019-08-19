@@ -132,11 +132,32 @@ class TransactionsApp {
                 recentTransactions.hidden = true;
             }
 
-            transactions.forEach(transaction => {
+            transactions.forEach((transaction, rowId) => {
+                var row = document.createElement("tr");
                 var date = document.createElement('td');
-                date.appendChild(document.createTextNode(transaction.transactionTime));
+                row.id = 'tx-' + rowId;
 
-                var detail = transaction.counterparty;
+                var expandGlyph = document.createElement('img');
+                expandGlyph.setAttribute('class', 'sync');
+                expandGlyph.setAttribute('src', 'arrow.png');
+                date.appendChild(expandGlyph);
+                expandGlyph.addEventListener('click', e => {
+                    let txDetails = document.querySelectorAll('#' + row.id + ' .transactionDetails');
+                    for (var j = 0; j < txDetails.length; j++) {
+                        let el = txDetails[j];
+                        el.hidden = !el.hidden;
+                    }
+                });
+
+                let cTxDate = transaction.transactionTime.split('T')[0];
+                let cTxTime = transaction.transactionTime.split('T')[1];
+
+                date.appendChild(document.createTextNode(cTxDate));
+                let cTime = document.createElement('span');
+                cTime.className = 'transactionDetails';
+                cTime.hidden = true;
+                cTime.appendChild(document.createTextNode(cTxTime));
+                date.appendChild(cTime);
 
                 var amount = document.createElement('td');
                 var amt = transaction.amount.toFixed(2);
@@ -154,7 +175,6 @@ class TransactionsApp {
                 var spendingCategory = document.createElement('td');
                 spendingCategory.appendChild(document.createTextNode(transaction.spendingCategory));
 
-                var row = document.createElement("tr");
                 if (transaction.status === 'PENDING') {
                     row.className += "table-secondary";
                 }
@@ -162,8 +182,16 @@ class TransactionsApp {
                     row.className += "table-info";
                 }
 
+                let txCounterparty = transaction.counterparty;
                 var txDetails = document.createElement('td');
-                txDetails.appendChild(document.createTextNode(detail));
+                txDetails.appendChild(document.createTextNode(txCounterparty));
+
+                let txReference = transaction.reference;
+                let txRefElement = document.createElement('span');
+                txRefElement.className = 'transactionDetails';
+                txRefElement.hidden = true;
+                txRefElement.appendChild(document.createTextNode(txReference))
+                txDetails.appendChild(txRefElement);
 
                 var refresh = document.createElement('td');
                 var refreshGlyph = document.createElement('img');
