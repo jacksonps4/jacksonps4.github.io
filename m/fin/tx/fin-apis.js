@@ -18,6 +18,20 @@ class FinApis {
             .then(cb);
     }
 
+    searchTransactions(q, page, cb) {
+        var url = this.createUrl('/transactions/search?q=' + q);
+        if (page) {
+           url = url.concat('&page=' + page);
+        }
+        fetch(url, {
+            credentials: 'include'
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(cb);
+    }
+
     getBalance(cb) {
         fetch(this.createUrl('/transactions/balance'), {
             credentials: 'include'
