@@ -388,8 +388,12 @@ class TransactionsApp {
 
     bindSearchButton() {
         this.pageElements.searchButton.addEventListener('click', e => {
-            this.loadTransactions((cb, page) => this.apis.searchTransactions(this.pageElements.searchText.value,
-                page, cb));
+            if (this.pageElements.searchText.value && this.pageElements.searchText.value.trim().length > 0) {
+                this.loadTransactions((cb, page) => this.apis.searchTransactions(this.pageElements.searchText.value,
+                    page, cb));
+            } else {
+                this.loadTransactions((cb, page) => this.apis.getRecentTransactions(cb, page));
+            }
         });
     }
 }
