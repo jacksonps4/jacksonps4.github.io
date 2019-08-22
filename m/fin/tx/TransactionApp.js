@@ -377,9 +377,14 @@ class TransactionsApp {
                 var meanAmnt = lineItem.mean.toFixed(2);
                 mean.appendChild(document.createTextNode(meanAmnt));
 
+                var total = document.createElement('td');
+                var totalAmnt = lineItem.total.toFixed(2);
+                total.appendChild(document.createTextNode(totalAmnt));
+
                 var row = document.createElement("tr");
                 row.appendChild(category);
                 row.appendChild(mean);
+                row.appendChild(total);
 
                 this.pageElements.analysis.appendChild(row);
             });
