@@ -142,7 +142,7 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         </div>
         <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
             <script>
-                function onSignIn() {
+                function onSignIn(googleUser) {
                     let profile = googleUser.getBasicProfile();
 
                     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
