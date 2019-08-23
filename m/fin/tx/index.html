@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Transactions</title>
+    <title>cwpad.com financial</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,21 +9,27 @@
     <link rel="stylesheet" href="bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
+    <!-- dependencies -->
     <script src="jquery-3.3.1.slim.min.js"
             integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
             crossorigin="anonymous"></script>
     <script src="popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
             crossorigin="anonymous"></script>
-
     <!-- bootstrap -->
     <script src="bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
             crossorigin="anonymous"></script>
-
     <!-- charts.js -->
     <script src="Chart.bundle.js"></script>
 
+    <!-- Google APIs -->
+    <meta name="google-signin-client_id" content="642857611880-5qro3tqn16hegvf9jin4ajfdnjpp2dje.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+
+    <!-- this page -->
     <script src="fin-apis.js" crossorigin="use-credentials"></script>
     <script src="TransactionApp.js"></script>
+    <script src="Authentication.js"></script>
 </head>
 <body onload="new TransactionsApp()">
 <style>
@@ -71,6 +77,9 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         </li>
         <li class="nav-item">
             <a class="nav-link" id="annual-tab" data-toggle="tab" href="#annual" role="tab" aria-controls="annual" aria-selected="false">Annual spending</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="account-tab" data-toggle="tab" href="#account" role="tab" aria-controls="account" aria-selected="false">Account</a>
         </li>
     </ul>
     <div class="tab-content" id="myTabContent">
@@ -130,6 +139,9 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
                 <tbody id="analysis">
                 </tbody>
             </table>
+        </div>
+        <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
+            <div class="g-signin2" data-onsuccess="new Authentication().onSignIn"></div>
         </div>
     </div>
 </div>
