@@ -4,7 +4,7 @@ class Authentication {
     }
 
     init() {
-      fetch('/session/check', {
+      fetch('https://api.cwpad.com/session/check', {
         credentials: 'include'
       }).then(response => {
         if (response.status === 401) {
