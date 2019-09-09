@@ -4,7 +4,7 @@ class Authentication {
     }
 
     init() {
-      fetch('https://api.cwpad.com/session/check', {
+      fetch('/session/check', {
         credentials: 'include'
       }).then(response => {
         if (response.status === 401) {
@@ -18,7 +18,7 @@ class Authentication {
     signIn() {
       gapi.load('auth2', () => {
         gapi.auth2.init({
-          'client_id': '642857611880-lmm7ub4enbshgk0o5de7tdbftfnhptb3.apps.googleusercontent.com',
+          'client_id': '642857611880-5qro3tqn16hegvf9jin4ajfdnjpp2dje.apps.googleusercontent.com',
           'ux_mode': 'popup'
         }).then(googleAuth => {
           if (!googleAuth.isSignedIn.get()) {
