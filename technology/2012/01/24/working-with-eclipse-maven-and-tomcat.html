@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Working with Eclipse, Maven and Tomcat | cwpad.com</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="Working with Eclipse, Maven and Tomcat" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="It occurred to me recently that my previous article on working with Eclipse, Maven and Tomcat and making them &quot;play nicely&quot; seems a little out of date. There have been quite a few advancements in all of those technologies since the original publication of the guide. The old article gets plenty of hits as it is linked from a Stackoverflow thread, so by way of ensuring this information is current, I am going to detail how I currently work with Maven web-app projects to run on Tomcat using Eclipse as an IDE. It is considerably simpler now than it used to be to get a working usable setup. Goals Application will run in Eclipse and standalone without modification - hence simple debugging is possible Don&#39;t need to deploy the application to test it No configuration required in the web container to make the application work Running a web application using Tomcat in Eclipse I am using Eclipse Indigo (although the same should work with Helios and the M2Eclipse plugin). Assuming you have a Maven WAR project in Eclipse with a deployment descriptor located in the project at src/main/webapp/WEB-INF/web.xml, you can launch it easily in Eclipse by doing Right-click your web app project -&gt; Run as -&gt; Run configurations Right click Maven Build in the left pane -&gt; New Set the name to something suitable (usually your project name) For base directory, enter ${workspace_loc:/your-project-name} For goal, enter tomcat:run Click run For future launches, you should simply be able to click the Run as or Debug as icons on the toolbar and select the name that you chose in step 3. You can set breakpoints if needed. Running a web application standalone Here, there are two choices. From the root of the Maven project, you can issue the command mvn tomcat:run. Alternatively, you can build your WAR file using mvn package and copy the .WAR file from the target/ directory to a Tomcat or other servlet container deployment directory and start it up." />
+<meta property="og:description" content="It occurred to me recently that my previous article on working with Eclipse, Maven and Tomcat and making them &quot;play nicely&quot; seems a little out of date. There have been quite a few advancements in all of those technologies since the original publication of the guide. The old article gets plenty of hits as it is linked from a Stackoverflow thread, so by way of ensuring this information is current, I am going to detail how I currently work with Maven web-app projects to run on Tomcat using Eclipse as an IDE. It is considerably simpler now than it used to be to get a working usable setup. Goals Application will run in Eclipse and standalone without modification - hence simple debugging is possible Don&#39;t need to deploy the application to test it No configuration required in the web container to make the application work Running a web application using Tomcat in Eclipse I am using Eclipse Indigo (although the same should work with Helios and the M2Eclipse plugin). Assuming you have a Maven WAR project in Eclipse with a deployment descriptor located in the project at src/main/webapp/WEB-INF/web.xml, you can launch it easily in Eclipse by doing Right-click your web app project -&gt; Run as -&gt; Run configurations Right click Maven Build in the left pane -&gt; New Set the name to something suitable (usually your project name) For base directory, enter ${workspace_loc:/your-project-name} For goal, enter tomcat:run Click run For future launches, you should simply be able to click the Run as or Debug as icons on the toolbar and select the name that you chose in step 3. You can set breakpoints if needed. Running a web application standalone Here, there are two choices. From the root of the Maven project, you can issue the command mvn tomcat:run. Alternatively, you can build your WAR file using mvn package and copy the .WAR file from the target/ directory to a Tomcat or other servlet container deployment directory and start it up." />
+<link rel="canonical" href="/technology/2012/01/24/working-with-eclipse-maven-and-tomcat.html" />
+<meta property="og:url" content="/technology/2012/01/24/working-with-eclipse-maven-and-tomcat.html" />
+<meta property="og:site_name" content="cwpad.com" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-01-24T17:15:54+00:00" />
+<script type="application/ld+json">
+{"description":"It occurred to me recently that my previous article on working with Eclipse, Maven and Tomcat and making them &quot;play nicely&quot; seems a little out of date. There have been quite a few advancements in all of those technologies since the original publication of the guide. The old article gets plenty of hits as it is linked from a Stackoverflow thread, so by way of ensuring this information is current, I am going to detail how I currently work with Maven web-app projects to run on Tomcat using Eclipse as an IDE. It is considerably simpler now than it used to be to get a working usable setup. Goals Application will run in Eclipse and standalone without modification - hence simple debugging is possible Don&#39;t need to deploy the application to test it No configuration required in the web container to make the application work Running a web application using Tomcat in Eclipse I am using Eclipse Indigo (although the same should work with Helios and the M2Eclipse plugin). Assuming you have a Maven WAR project in Eclipse with a deployment descriptor located in the project at src/main/webapp/WEB-INF/web.xml, you can launch it easily in Eclipse by doing Right-click your web app project -&gt; Run as -&gt; Run configurations Right click Maven Build in the left pane -&gt; New Set the name to something suitable (usually your project name) For base directory, enter ${workspace_loc:/your-project-name} For goal, enter tomcat:run Click run For future launches, you should simply be able to click the Run as or Debug as icons on the toolbar and select the name that you chose in step 3. You can set breakpoints if needed. Running a web application standalone Here, there are two choices. From the root of the Maven project, you can issue the command mvn tomcat:run. Alternatively, you can build your WAR file using mvn package and copy the .WAR file from the target/ directory to a Tomcat or other servlet container deployment directory and start it up.","@type":"BlogPosting","url":"/technology/2012/01/24/working-with-eclipse-maven-and-tomcat.html","headline":"Working with Eclipse, Maven and Tomcat","dateModified":"2012-01-24T17:15:54+00:00","datePublished":"2012-01-24T17:15:54+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"/technology/2012/01/24/working-with-eclipse-maven-and-tomcat.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="cwpad.com" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">cwpad.com</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/stuff-i-made/">Stuff I have made</a><a class="page-link" href="/blog">Blog</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Working with Eclipse, Maven and Tomcat</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2012-01-24T17:15:54+00:00" itemprop="datePublished">Jan 24, 2012
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{"display_name"=>"jacksonps4", "login"=>"jacksonps4", "email"=>"chris@indigenously.co.uk", "url"=>""}</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>It occurred to me recently that my <a href="http://jacksonps4.me/wordpress/?p=868">previous article on working with Eclipse, Maven and Tomcat</a> and making them "play nicely" seems a little out of date. There have been quite a few advancements in all of those technologies since the original publication of the guide. The old article gets plenty of hits as it is <a href="http://stackoverflow.com/questions/2651404/eclipse-maven-tomcat-debugging">linked from a Stackoverflow thread</a>, so by way of ensuring this information is current, I am going to detail how I currently work with Maven web-app projects to run on Tomcat using Eclipse as an IDE. It is considerably simpler now than it used to be to get a working usable setup.</p>
+<h3>Goals</h3>
+<ul>
+<li>Application will run in Eclipse and standalone without modification - hence simple debugging is possible</li>
+<li>Don't need to deploy the application to test it</li>
+<li>No configuration required in the web container to make the application work</li>
+</ul>
+<h3>Running a web application using Tomcat in Eclipse</h3>
+<p>I am using Eclipse Indigo (although the same should work with Helios and the M2Eclipse plugin). Assuming you have a Maven WAR project in Eclipse with a deployment descriptor located in the project at <code>src/main/webapp/WEB-INF/web.xml</code>, you can launch it easily in Eclipse by doing </p>
+<ol>
+<li>Right-click your web app project -> Run as -> Run configurations</li>
+<li>Right click Maven Build in the left pane -> New</li>
+<li>Set the name to something suitable (usually your project name)</li>
+<li>For base directory, enter <code>${workspace_loc:/your-project-name}</code></li>
+<li>For goal, enter <code>tomcat:run</code></li>
+<li>Click run</li>
+</ol>
+<p>For future launches, you should simply be able to click the <code>Run as</code> or <code>Debug as</code> icons on the toolbar and select the name that you chose in step 3. You can set breakpoints if needed.</p>
+<h3>Running a web application standalone</h3>
+<p>Here, there are two choices. </p>
+<p>From the root of the Maven project, you can issue the command <code>mvn tomcat:run</code>. Alternatively, you can build your WAR file using <code>mvn package</code> and copy the .WAR file from the <code>target/</code> directory to a Tomcat or other servlet container deployment directory and start it up.</p>
+
+  </div><a class="u-url" href="/technology/2012/01/24/working-with-eclipse-maven-and-tomcat.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">cwpad.com</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">cwpad.com</li><li><a class="u-email" href="mailto:chris@indigenously.co.uk">chris@indigenously.co.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jacksonps4</span></a></li><li><a href="https://instagram.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#instagram"></use></svg> <span class="username">jacksonps4</span></a></li><li><a href="https://www.linkedin.com/in/chriswraith"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username">chriswraith</span></a></li><li><a href="https://www.twitter.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jacksonps4</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The homepage of Chris Wraith.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

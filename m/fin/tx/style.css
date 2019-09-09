@@ -1,0 +1,26 @@
+table tbody tr td, table thead tr th {
+}
+
+#monthly {
+    max-width: 500px;
+    max-height: 500px;
+}
+
+.sync {
+    height: 18px;
+    width: 18px;
+}
+
+#transactionPagination {
+    float: right;
+}
+
+.balance {
+    font-weight: bolder;
+    margin-left: 20px;
+}
+
+.transactionDetails {
+    font-size: x-small;
+    display: block;
+}

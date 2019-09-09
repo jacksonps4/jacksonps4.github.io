@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>How to configure JDK logging easily | cwpad.com</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="How to configure JDK logging easily" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="It&rsquo;s no secret. &nbsp;I am not a fan of using a third-party framework where the functionality exists in your runtime environment. &nbsp;There are quite a few logging frameworks available for Java applications and most developers will have used at least one at some point. &nbsp;Log4J,&nbsp;SLF4J,&nbsp;Commons Logging&nbsp;are three examples. &nbsp;Log4J provides a full-featured logging framework whereas the other two provide an API for logging, which enables the actual implementation used to be chosen at runtime (see&nbsp;factory-factory-factory). The JDK has provided the logging framework since Java 1.4. &nbsp;However, the uptake of native JDK logging is still pretty low in the Java community. &nbsp;There are a few reasons why this may be the case: The JDK version is&nbsp;not easy to configure. &nbsp;I hope to make it a little easier in this post. Other frameworks existed before the JDK implementation. &nbsp;Log4J released its first version in 1999 whereas Java 1.4, with the java.util.logging package, did not emerge until 2002. Standardisation: whilst the JDK implementation provides much flexibility, it does not have ready made implementations of some features (e.g. logging to a database), meaning that if one team in an organisation creates this feature, reusing it code somewhere else requires the team to support it (version and release it etc). Using java.util.logging Using the default configuration of the JDK logging utilities is easy. &nbsp;Simply get a logger instance for your class and start logging messages to it: package foo.bar; import java.util.logging.Logger; public class Foo { private final Logger logger = Logger.getLogger(getClass().getName()); void logSomething(String value) { logger.info(String.format(&quot;Hello %s&quot;, value)); } } However, a method call to&nbsp;logSomething(&quot;test&quot;)&nbsp;produces the somewhat untidy output below: Jan 2, 2011 1:19:48 AM foo.bar.Foo logSomething INFO: Hello test This isn&rsquo;t ideal. Also, if we log anything at the FINE, FINER or FINEST levels, this will not appear at all in the default configuration. Changing the configuration In configuring your JDK logging setup, you have two options. &nbsp;Either a configuration file (to which you must specify the absolute path as a system property) or a configuration class. &nbsp;I have found the simplest and most reusable way to configure JDK logging is to use a configuration class. &nbsp;Here is a simple example: Configuration class: package foo.bar; import java.util.logging.Formatter; import java.util.logging.SimpleFormatter; import java.util.logging.Handler; import java.util.logging.ConsoleHandler; import java.util.logging.LogManager; import java.util.logging.Logger; public class LogConfiguration { private final LogManager logManager; private final Logger rootLogger; private final Handler defaultHandler = new ConsoleHandler(); private final Formatter defaultFormatter = new SimpleFormatter(); public DefaultLoggingConfiguration() { super(); this.logManager = LogManager.getLogManager(); this.rootLogger = Logger.getLogger(&quot;&quot;); configure( ); } final void configure() { defaultHandler.setFormatter(defaultFormatter); defaultHandler.setLevel(Level.ALL); rootLogger.setLevel(Level.ALL); rootLogger.addHandler(defaultHandler); logManager.addLogger(rootLogger); } } Now to use your configuration class, simply add the following system property when you launch the application that does logging: -Djava.util.logging.config.class=foo.bar.LogConfiguration The key to the above configuration class is the line which gets the root logger, to which you can add a handler, to which in turn you can add a formatter. &nbsp;The root logger is obtained by requesting a logger named with the empty string: Logger rootLogger = Logger.getLogger(&quot;&quot;); This is by no means an exhaustive example but this simple setup will allow you to configure the things that you generally need to change (log level, log output format) without too much effort. Changing the log level To change the log level, simple adjust the line&nbsp;defaultHandler.setLevel(Level.ALL);&nbsp;to the desired&nbsp;Level. Altering the format To change the output format, simply implement your own&nbsp;Formatter&nbsp;&ndash; overriding theformat(LogRecord record)&nbsp;method. Then assign&nbsp;defaultFormatter&nbsp;in yourLogConfiguration&nbsp;class to your&nbsp;Formatter&nbsp;instance. &nbsp;Something like this will give more of a Log4J feel to the output: package foo.bar; public class LoggingFormatter extends Formatter { private static final String LINE_SEP = System.getProperty(&quot;line.separator&quot;); private static final String FIELD_SEP = &quot; &quot;; private ThreadLocal dateFormat = new ThreadLocal() { protected DateFormat initialValue() { return new SimpleDateFormat(&quot;dd/MM/yyyy HH:mm:ss.SSS&quot;); } }; public final String format(LogRecord record) { StringBuilder logEntry = new StringBuilder(); logEntry.append(dateFormat.get().format(new Date(record.getMillis()))); logEntry.append(FIELD_SEP); logEntry.append(getShortClassName(record.getLoggerName())); logEntry.append(FIELD_SEP); logEntry.append(record.getLevel().getName()); logEntry.append(FIELD_SEP); logEntry.append(record.getMessage()); logEntry.append(LINE_SEP); return logEntry.toString(); } final String getShortClassName(String fullName) { return fullName.substring(fullName.lastIndexOf(&quot;.&quot;) + 1); } } Then the corresponding change to the configuration class to use the above Formatter: private final Formatter defaultFormatter = new LoggingFormatter(); This will make your two lines of logging output shown above appear as follows: 02/01/2011 1:19:48 AM Foo INFO Hello test Happy logging." />
+<meta property="og:description" content="It&rsquo;s no secret. &nbsp;I am not a fan of using a third-party framework where the functionality exists in your runtime environment. &nbsp;There are quite a few logging frameworks available for Java applications and most developers will have used at least one at some point. &nbsp;Log4J,&nbsp;SLF4J,&nbsp;Commons Logging&nbsp;are three examples. &nbsp;Log4J provides a full-featured logging framework whereas the other two provide an API for logging, which enables the actual implementation used to be chosen at runtime (see&nbsp;factory-factory-factory). The JDK has provided the logging framework since Java 1.4. &nbsp;However, the uptake of native JDK logging is still pretty low in the Java community. &nbsp;There are a few reasons why this may be the case: The JDK version is&nbsp;not easy to configure. &nbsp;I hope to make it a little easier in this post. Other frameworks existed before the JDK implementation. &nbsp;Log4J released its first version in 1999 whereas Java 1.4, with the java.util.logging package, did not emerge until 2002. Standardisation: whilst the JDK implementation provides much flexibility, it does not have ready made implementations of some features (e.g. logging to a database), meaning that if one team in an organisation creates this feature, reusing it code somewhere else requires the team to support it (version and release it etc). Using java.util.logging Using the default configuration of the JDK logging utilities is easy. &nbsp;Simply get a logger instance for your class and start logging messages to it: package foo.bar; import java.util.logging.Logger; public class Foo { private final Logger logger = Logger.getLogger(getClass().getName()); void logSomething(String value) { logger.info(String.format(&quot;Hello %s&quot;, value)); } } However, a method call to&nbsp;logSomething(&quot;test&quot;)&nbsp;produces the somewhat untidy output below: Jan 2, 2011 1:19:48 AM foo.bar.Foo logSomething INFO: Hello test This isn&rsquo;t ideal. Also, if we log anything at the FINE, FINER or FINEST levels, this will not appear at all in the default configuration. Changing the configuration In configuring your JDK logging setup, you have two options. &nbsp;Either a configuration file (to which you must specify the absolute path as a system property) or a configuration class. &nbsp;I have found the simplest and most reusable way to configure JDK logging is to use a configuration class. &nbsp;Here is a simple example: Configuration class: package foo.bar; import java.util.logging.Formatter; import java.util.logging.SimpleFormatter; import java.util.logging.Handler; import java.util.logging.ConsoleHandler; import java.util.logging.LogManager; import java.util.logging.Logger; public class LogConfiguration { private final LogManager logManager; private final Logger rootLogger; private final Handler defaultHandler = new ConsoleHandler(); private final Formatter defaultFormatter = new SimpleFormatter(); public DefaultLoggingConfiguration() { super(); this.logManager = LogManager.getLogManager(); this.rootLogger = Logger.getLogger(&quot;&quot;); configure( ); } final void configure() { defaultHandler.setFormatter(defaultFormatter); defaultHandler.setLevel(Level.ALL); rootLogger.setLevel(Level.ALL); rootLogger.addHandler(defaultHandler); logManager.addLogger(rootLogger); } } Now to use your configuration class, simply add the following system property when you launch the application that does logging: -Djava.util.logging.config.class=foo.bar.LogConfiguration The key to the above configuration class is the line which gets the root logger, to which you can add a handler, to which in turn you can add a formatter. &nbsp;The root logger is obtained by requesting a logger named with the empty string: Logger rootLogger = Logger.getLogger(&quot;&quot;); This is by no means an exhaustive example but this simple setup will allow you to configure the things that you generally need to change (log level, log output format) without too much effort. Changing the log level To change the log level, simple adjust the line&nbsp;defaultHandler.setLevel(Level.ALL);&nbsp;to the desired&nbsp;Level. Altering the format To change the output format, simply implement your own&nbsp;Formatter&nbsp;&ndash; overriding theformat(LogRecord record)&nbsp;method. Then assign&nbsp;defaultFormatter&nbsp;in yourLogConfiguration&nbsp;class to your&nbsp;Formatter&nbsp;instance. &nbsp;Something like this will give more of a Log4J feel to the output: package foo.bar; public class LoggingFormatter extends Formatter { private static final String LINE_SEP = System.getProperty(&quot;line.separator&quot;); private static final String FIELD_SEP = &quot; &quot;; private ThreadLocal dateFormat = new ThreadLocal() { protected DateFormat initialValue() { return new SimpleDateFormat(&quot;dd/MM/yyyy HH:mm:ss.SSS&quot;); } }; public final String format(LogRecord record) { StringBuilder logEntry = new StringBuilder(); logEntry.append(dateFormat.get().format(new Date(record.getMillis()))); logEntry.append(FIELD_SEP); logEntry.append(getShortClassName(record.getLoggerName())); logEntry.append(FIELD_SEP); logEntry.append(record.getLevel().getName()); logEntry.append(FIELD_SEP); logEntry.append(record.getMessage()); logEntry.append(LINE_SEP); return logEntry.toString(); } final String getShortClassName(String fullName) { return fullName.substring(fullName.lastIndexOf(&quot;.&quot;) + 1); } } Then the corresponding change to the configuration class to use the above Formatter: private final Formatter defaultFormatter = new LoggingFormatter(); This will make your two lines of logging output shown above appear as follows: 02/01/2011 1:19:48 AM Foo INFO Hello test Happy logging." />
+<link rel="canonical" href="/uncategorized/2011/03/05/how-to-configure-jdk-logging-easily.html" />
+<meta property="og:url" content="/uncategorized/2011/03/05/how-to-configure-jdk-logging-easily.html" />
+<meta property="og:site_name" content="cwpad.com" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-03-05T22:22:22+00:00" />
+<script type="application/ld+json">
+{"description":"It&rsquo;s no secret. &nbsp;I am not a fan of using a third-party framework where the functionality exists in your runtime environment. &nbsp;There are quite a few logging frameworks available for Java applications and most developers will have used at least one at some point. &nbsp;Log4J,&nbsp;SLF4J,&nbsp;Commons Logging&nbsp;are three examples. &nbsp;Log4J provides a full-featured logging framework whereas the other two provide an API for logging, which enables the actual implementation used to be chosen at runtime (see&nbsp;factory-factory-factory). The JDK has provided the logging framework since Java 1.4. &nbsp;However, the uptake of native JDK logging is still pretty low in the Java community. &nbsp;There are a few reasons why this may be the case: The JDK version is&nbsp;not easy to configure. &nbsp;I hope to make it a little easier in this post. Other frameworks existed before the JDK implementation. &nbsp;Log4J released its first version in 1999 whereas Java 1.4, with the java.util.logging package, did not emerge until 2002. Standardisation: whilst the JDK implementation provides much flexibility, it does not have ready made implementations of some features (e.g. logging to a database), meaning that if one team in an organisation creates this feature, reusing it code somewhere else requires the team to support it (version and release it etc). Using java.util.logging Using the default configuration of the JDK logging utilities is easy. &nbsp;Simply get a logger instance for your class and start logging messages to it: package foo.bar; import java.util.logging.Logger; public class Foo { private final Logger logger = Logger.getLogger(getClass().getName()); void logSomething(String value) { logger.info(String.format(&quot;Hello %s&quot;, value)); } } However, a method call to&nbsp;logSomething(&quot;test&quot;)&nbsp;produces the somewhat untidy output below: Jan 2, 2011 1:19:48 AM foo.bar.Foo logSomething INFO: Hello test This isn&rsquo;t ideal. Also, if we log anything at the FINE, FINER or FINEST levels, this will not appear at all in the default configuration. Changing the configuration In configuring your JDK logging setup, you have two options. &nbsp;Either a configuration file (to which you must specify the absolute path as a system property) or a configuration class. &nbsp;I have found the simplest and most reusable way to configure JDK logging is to use a configuration class. &nbsp;Here is a simple example: Configuration class: package foo.bar; import java.util.logging.Formatter; import java.util.logging.SimpleFormatter; import java.util.logging.Handler; import java.util.logging.ConsoleHandler; import java.util.logging.LogManager; import java.util.logging.Logger; public class LogConfiguration { private final LogManager logManager; private final Logger rootLogger; private final Handler defaultHandler = new ConsoleHandler(); private final Formatter defaultFormatter = new SimpleFormatter(); public DefaultLoggingConfiguration() { super(); this.logManager = LogManager.getLogManager(); this.rootLogger = Logger.getLogger(&quot;&quot;); configure( ); } final void configure() { defaultHandler.setFormatter(defaultFormatter); defaultHandler.setLevel(Level.ALL); rootLogger.setLevel(Level.ALL); rootLogger.addHandler(defaultHandler); logManager.addLogger(rootLogger); } } Now to use your configuration class, simply add the following system property when you launch the application that does logging: -Djava.util.logging.config.class=foo.bar.LogConfiguration The key to the above configuration class is the line which gets the root logger, to which you can add a handler, to which in turn you can add a formatter. &nbsp;The root logger is obtained by requesting a logger named with the empty string: Logger rootLogger = Logger.getLogger(&quot;&quot;); This is by no means an exhaustive example but this simple setup will allow you to configure the things that you generally need to change (log level, log output format) without too much effort. Changing the log level To change the log level, simple adjust the line&nbsp;defaultHandler.setLevel(Level.ALL);&nbsp;to the desired&nbsp;Level. Altering the format To change the output format, simply implement your own&nbsp;Formatter&nbsp;&ndash; overriding theformat(LogRecord record)&nbsp;method. Then assign&nbsp;defaultFormatter&nbsp;in yourLogConfiguration&nbsp;class to your&nbsp;Formatter&nbsp;instance. &nbsp;Something like this will give more of a Log4J feel to the output: package foo.bar; public class LoggingFormatter extends Formatter { private static final String LINE_SEP = System.getProperty(&quot;line.separator&quot;); private static final String FIELD_SEP = &quot; &quot;; private ThreadLocal dateFormat = new ThreadLocal() { protected DateFormat initialValue() { return new SimpleDateFormat(&quot;dd/MM/yyyy HH:mm:ss.SSS&quot;); } }; public final String format(LogRecord record) { StringBuilder logEntry = new StringBuilder(); logEntry.append(dateFormat.get().format(new Date(record.getMillis()))); logEntry.append(FIELD_SEP); logEntry.append(getShortClassName(record.getLoggerName())); logEntry.append(FIELD_SEP); logEntry.append(record.getLevel().getName()); logEntry.append(FIELD_SEP); logEntry.append(record.getMessage()); logEntry.append(LINE_SEP); return logEntry.toString(); } final String getShortClassName(String fullName) { return fullName.substring(fullName.lastIndexOf(&quot;.&quot;) + 1); } } Then the corresponding change to the configuration class to use the above Formatter: private final Formatter defaultFormatter = new LoggingFormatter(); This will make your two lines of logging output shown above appear as follows: 02/01/2011 1:19:48 AM Foo INFO Hello test Happy logging.","@type":"BlogPosting","url":"/uncategorized/2011/03/05/how-to-configure-jdk-logging-easily.html","headline":"How to configure JDK logging easily","dateModified":"2011-03-05T22:22:22+00:00","datePublished":"2011-03-05T22:22:22+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"/uncategorized/2011/03/05/how-to-configure-jdk-logging-easily.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="cwpad.com" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">cwpad.com</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/stuff-i-made/">Stuff I have made</a><a class="page-link" href="/blog">Blog</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">How to configure JDK logging easily</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2011-03-05T22:22:22+00:00" itemprop="datePublished">Mar 5, 2011
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{"display_name"=>"jacksonps4", "login"=>"jacksonps4", "email"=>"chris@indigenously.co.uk", "url"=>""}</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>It&rsquo;s no secret. &nbsp;I am not a fan of using a third-party framework where the functionality exists in your runtime environment. &nbsp;There are quite a few logging frameworks available for Java applications and most developers will have used at least one at some point. &nbsp;<a href="http://logging.apache.org/log4j/1.2/" target="_blank">Log4J</a>,&nbsp;<a href="http://www.slf4j.org/" target="_blank">SLF4J</a>,&nbsp;<a href="http://commons.apache.org/logging/" target="_blank">Commons Logging</a>&nbsp;are three examples. &nbsp;Log4J provides a full-featured logging framework whereas the other two provide an API for logging, which enables the actual implementation used to be chosen at runtime (see&nbsp;<a href="http://discuss.joelonsoftware.com/default.asp?joel.3.219431.12" target="_blank">factory-factory-factory</a>).</p>
+<p>The JDK has provided the logging framework since Java 1.4. &nbsp;However, the uptake of native JDK logging is still pretty low in the Java community. &nbsp;There are a few reasons why this may be the case:</p>
+<ul>
+<li>The JDK version is&nbsp;<em>not easy to configure</em>. &nbsp;I hope to make it a little easier in this post.</li>
+<li>Other frameworks existed before the JDK implementation. &nbsp;Log4J released its first version in 1999 whereas Java 1.4, with the java.util.logging package, did not emerge until 2002.</li>
+<li>Standardisation: whilst the JDK implementation provides much flexibility, it does not have ready made implementations of some features (e.g. logging to a database), meaning that if one team in an organisation creates this feature, reusing it code somewhere else requires the team to support it (version and release it etc).</li>
+</ul>
+<p><strong>Using java.util.logging</strong></p>
+<p>Using the default configuration of the JDK logging utilities is easy. &nbsp;Simply get a logger instance for your class and start logging messages to it:</p>
+<pre>package foo.bar;
+
+import java.util.logging.Logger;
+
+public class Foo {
+  private final Logger logger = Logger.getLogger(getClass().getName());
+
+  void logSomething(String value) {
+    logger.info(String.format("Hello %s", value));
+  }
+}</pre>
+<p>However, a method call to&nbsp;<code>logSomething("test")</code>&nbsp;produces the somewhat untidy output below:</p>
+<pre>Jan 2, 2011 1:19:48 AM foo.bar.Foo logSomething
+INFO: Hello test</pre>
+<p>This isn&rsquo;t ideal. Also, if we log anything at the FINE, FINER or FINEST levels, this will not appear at all in the default configuration.</p>
+<p><strong>Changing the configuration</strong></p>
+<p>In configuring your JDK logging setup, you have two options. &nbsp;Either a configuration file (to which you must specify the absolute path as a system property) or a configuration class. &nbsp;I have found the simplest and most reusable way to configure JDK logging is to use a configuration class. &nbsp;Here is a simple example:</p>
+<p>Configuration class:</p>
+<pre>package foo.bar;
+
+import java.util.logging.Formatter;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.Handler;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+public class LogConfiguration {
+  private final LogManager logManager;
+  private final Logger rootLogger;
+  private final Handler defaultHandler = new ConsoleHandler();
+  private final Formatter defaultFormatter = new SimpleFormatter();
+
+  public DefaultLoggingConfiguration() {
+    super();
+
+    this.logManager = LogManager.getLogManager();
+    this.rootLogger = Logger.getLogger("");
+
+    configure( );
+  }
+
+  final void configure() {
+    defaultHandler.setFormatter(defaultFormatter);
+    defaultHandler.setLevel(Level.ALL);
+    rootLogger.setLevel(Level.ALL);
+    rootLogger.addHandler(defaultHandler);
+    logManager.addLogger(rootLogger);
+  }
+}</pre>
+<p>Now to use your configuration class, simply add the following system property when you launch the application that does logging:</p>
+<pre>-Djava.util.logging.config.class=foo.bar.LogConfiguration</pre>
+<p>The key to the above configuration class is the line which gets the root logger, to which you can add a handler, to which in turn you can add a formatter. &nbsp;The root logger is obtained by requesting a logger named with the empty string:</p>
+<pre>    Logger rootLogger = Logger.getLogger("");</pre>
+<p>This is by no means an exhaustive example but this simple setup will allow you to configure the things that you generally need to change (log level, log output format) without too much effort.</p>
+<p><strong>Changing the log level</strong></p>
+<p>To change the log level, simple adjust the line&nbsp;<code>defaultHandler.setLevel(Level.ALL);</code>&nbsp;to the desired&nbsp;<a href="http://download.oracle.com/javase/6/docs/api/java/util/logging/Level.html">Level</a>.</p>
+<p><strong>Altering the format</strong></p>
+<p>To change the output format, simply implement your own&nbsp;<a href="http://download.oracle.com/javase/6/docs/api/java/util/logging/Formatter.html" target="_blank">Formatter</a>&nbsp;&ndash; overriding the<code>format(LogRecord record)</code>&nbsp;method. Then assign&nbsp;<code>defaultFormatter</code>&nbsp;in your<code>LogConfiguration</code>&nbsp;class to your&nbsp;<a href="http://download.oracle.com/javase/6/docs/api/java/util/logging/Formatter.html" target="_blank">Formatter</a>&nbsp;instance. &nbsp;Something like this will give more of a Log4J feel to the output:</p>
+<pre>package foo.bar;
+
+public class LoggingFormatter extends Formatter {
+  private static final String LINE_SEP = System.getProperty("line.separator");
+  private static final String FIELD_SEP = " ";
+  private ThreadLocal dateFormat = new ThreadLocal() {
+    protected DateFormat initialValue() {
+      return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+    }
+  };
+
+  public final String format(LogRecord record) {
+    StringBuilder logEntry = new StringBuilder();
+    logEntry.append(dateFormat.get().format(new Date(record.getMillis())));
+    logEntry.append(FIELD_SEP);
+    logEntry.append(getShortClassName(record.getLoggerName()));
+    logEntry.append(FIELD_SEP);
+    logEntry.append(record.getLevel().getName());
+    logEntry.append(FIELD_SEP);
+    logEntry.append(record.getMessage());
+    logEntry.append(LINE_SEP);
+    return logEntry.toString();
+  }
+
+  final String getShortClassName(String fullName) {
+    return fullName.substring(fullName.lastIndexOf(".") + 1);
+  }
+}</pre>
+<p>Then the corresponding change to the configuration class to use the above Formatter:</p>
+<pre>private final Formatter defaultFormatter = new LoggingFormatter();</pre>
+<p>This will make your two lines of logging output shown above appear as follows:</p>
+<pre>02/01/2011 1:19:48 AM Foo INFO Hello test</pre>
+<p>Happy logging.</p>
+
+  </div><a class="u-url" href="/uncategorized/2011/03/05/how-to-configure-jdk-logging-easily.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">cwpad.com</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">cwpad.com</li><li><a class="u-email" href="mailto:chris@indigenously.co.uk">chris@indigenously.co.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jacksonps4</span></a></li><li><a href="https://instagram.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#instagram"></use></svg> <span class="username">jacksonps4</span></a></li><li><a href="https://www.linkedin.com/in/chriswraith"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username">chriswraith</span></a></li><li><a href="https://www.twitter.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jacksonps4</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The homepage of Chris Wraith.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

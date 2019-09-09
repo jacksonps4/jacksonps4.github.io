@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>A simple technique for reducing self-hosted WordPress comment spam | cwpad.com</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="A simple technique for reducing self-hosted WordPress comment spam" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Anyone with a WordPress blog will no doubt have experienced that once Google indexes it at all, lots of comments start appearing. Often the comments look like they could be genuine and are often complimentary of your blog or writing style. Sometimes they offer what appears to be constructive feedback on your site not functioning in a particular browser. The one thing that they usually have in common is that they tend to have a link or email address that points to something spammy. The links usually want you to buy or view something that you do not want to. The good news is that if your blog is self-hosted, there are some simple techniques for reducing comment spam. The following instructions are for Linux users who have root access to their server. If you have comment approvals turned on, you&#39;ll have to manually approve comments before they are displayed. This gives you the added advantage that when you see comments that appear to be spam, you can mark them as such. WordPress actually records the IP address of all commenters as well as whether or not they are spam in its database. This means that once there are more than a couple of spammy comments from the same IP, it is relatively straightforward to blacklist them. A simple method to do this is to add them to a firewall rule chain which causes all packets from the specified IP to be dropped. This not only stops them from adding comment spam, it also stops them from viewing your site altogether. To set this up on Linux, you need to create a chain in iptables (as root): $ /sbin/iptables -N BLACKLIST Then you can schedule the following script to run every couple of hours. #!/bin/sh&lt;/p&gt; # database credentials username=&#39;wordpress_user&#39; details=&#39;wordpress_pwd&#39; db_name=&#39;wordpress_dbname&#39; # tune this to your preference: will blacklist an IP address after n comments marked as spam spam_count=2 query=&quot;select comment_author_IP, comment_approved, count(*) from wp_comments group by comment_author_IP, comment_approved having count(*) &gt; $spam_count order by count(*) desc&quot; blacklist=`mysql -D ${db_name} -u ${username} -p${details} &lt;&lt; --EOF-- | grep spam | awk &#39;{print $1}&#39; $query --EOF--` blacklisted=`iptables -L BLACKLIST -vn | awk &#39;$3 ~ /DROP/ { print $8 }&#39;` for addr in $blacklist; do echo $blacklisted | grep $addr &gt; /dev/null 2&gt;&amp;1 if [ $? -ne 0 ]; then logger -t wp-blacklister &quot;Blacklisting $addr for &gt; $spam_count WP spammed comments&quot; iptables -A BLACKLIST -s $addr -j DROP fi done &lt;/code&gt; This technique has one disadvantage in that you can occasionally block some users that you don&#39;t want to. This is rare but could occur if a spammer comes from the same IP address as a genuine user: for example if they are both using the same proxy server or gateway. As a result, it is necessary to flush the BLACKLIST firewall chain periodically - removing all items from it. This usually works ok because once persistent spammers realise that they are no longer able to connect to your site, they give up and try someone else&#39;s site instead. You can flush the BLACKLIST chain by setting up a scheduled job to execute the following command: iptables -F BLACKLIST Hopefully, this should start to reduce your WordPress spam fairly quickly." />
+<meta property="og:description" content="Anyone with a WordPress blog will no doubt have experienced that once Google indexes it at all, lots of comments start appearing. Often the comments look like they could be genuine and are often complimentary of your blog or writing style. Sometimes they offer what appears to be constructive feedback on your site not functioning in a particular browser. The one thing that they usually have in common is that they tend to have a link or email address that points to something spammy. The links usually want you to buy or view something that you do not want to. The good news is that if your blog is self-hosted, there are some simple techniques for reducing comment spam. The following instructions are for Linux users who have root access to their server. If you have comment approvals turned on, you&#39;ll have to manually approve comments before they are displayed. This gives you the added advantage that when you see comments that appear to be spam, you can mark them as such. WordPress actually records the IP address of all commenters as well as whether or not they are spam in its database. This means that once there are more than a couple of spammy comments from the same IP, it is relatively straightforward to blacklist them. A simple method to do this is to add them to a firewall rule chain which causes all packets from the specified IP to be dropped. This not only stops them from adding comment spam, it also stops them from viewing your site altogether. To set this up on Linux, you need to create a chain in iptables (as root): $ /sbin/iptables -N BLACKLIST Then you can schedule the following script to run every couple of hours. #!/bin/sh&lt;/p&gt; # database credentials username=&#39;wordpress_user&#39; details=&#39;wordpress_pwd&#39; db_name=&#39;wordpress_dbname&#39; # tune this to your preference: will blacklist an IP address after n comments marked as spam spam_count=2 query=&quot;select comment_author_IP, comment_approved, count(*) from wp_comments group by comment_author_IP, comment_approved having count(*) &gt; $spam_count order by count(*) desc&quot; blacklist=`mysql -D ${db_name} -u ${username} -p${details} &lt;&lt; --EOF-- | grep spam | awk &#39;{print $1}&#39; $query --EOF--` blacklisted=`iptables -L BLACKLIST -vn | awk &#39;$3 ~ /DROP/ { print $8 }&#39;` for addr in $blacklist; do echo $blacklisted | grep $addr &gt; /dev/null 2&gt;&amp;1 if [ $? -ne 0 ]; then logger -t wp-blacklister &quot;Blacklisting $addr for &gt; $spam_count WP spammed comments&quot; iptables -A BLACKLIST -s $addr -j DROP fi done &lt;/code&gt; This technique has one disadvantage in that you can occasionally block some users that you don&#39;t want to. This is rare but could occur if a spammer comes from the same IP address as a genuine user: for example if they are both using the same proxy server or gateway. As a result, it is necessary to flush the BLACKLIST firewall chain periodically - removing all items from it. This usually works ok because once persistent spammers realise that they are no longer able to connect to your site, they give up and try someone else&#39;s site instead. You can flush the BLACKLIST chain by setting up a scheduled job to execute the following command: iptables -F BLACKLIST Hopefully, this should start to reduce your WordPress spam fairly quickly." />
+<link rel="canonical" href="/uncategorized/2012/02/27/a-simple-technique-for-reducing-self-hosted-wordpress-comment-spam.html" />
+<meta property="og:url" content="/uncategorized/2012/02/27/a-simple-technique-for-reducing-self-hosted-wordpress-comment-spam.html" />
+<meta property="og:site_name" content="cwpad.com" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-02-27T09:25:28+00:00" />
+<script type="application/ld+json">
+{"description":"Anyone with a WordPress blog will no doubt have experienced that once Google indexes it at all, lots of comments start appearing. Often the comments look like they could be genuine and are often complimentary of your blog or writing style. Sometimes they offer what appears to be constructive feedback on your site not functioning in a particular browser. The one thing that they usually have in common is that they tend to have a link or email address that points to something spammy. The links usually want you to buy or view something that you do not want to. The good news is that if your blog is self-hosted, there are some simple techniques for reducing comment spam. The following instructions are for Linux users who have root access to their server. If you have comment approvals turned on, you&#39;ll have to manually approve comments before they are displayed. This gives you the added advantage that when you see comments that appear to be spam, you can mark them as such. WordPress actually records the IP address of all commenters as well as whether or not they are spam in its database. This means that once there are more than a couple of spammy comments from the same IP, it is relatively straightforward to blacklist them. A simple method to do this is to add them to a firewall rule chain which causes all packets from the specified IP to be dropped. This not only stops them from adding comment spam, it also stops them from viewing your site altogether. To set this up on Linux, you need to create a chain in iptables (as root): $ /sbin/iptables -N BLACKLIST Then you can schedule the following script to run every couple of hours. #!/bin/sh&lt;/p&gt; # database credentials username=&#39;wordpress_user&#39; details=&#39;wordpress_pwd&#39; db_name=&#39;wordpress_dbname&#39; # tune this to your preference: will blacklist an IP address after n comments marked as spam spam_count=2 query=&quot;select comment_author_IP, comment_approved, count(*) from wp_comments group by comment_author_IP, comment_approved having count(*) &gt; $spam_count order by count(*) desc&quot; blacklist=`mysql -D ${db_name} -u ${username} -p${details} &lt;&lt; --EOF-- | grep spam | awk &#39;{print $1}&#39; $query --EOF--` blacklisted=`iptables -L BLACKLIST -vn | awk &#39;$3 ~ /DROP/ { print $8 }&#39;` for addr in $blacklist; do echo $blacklisted | grep $addr &gt; /dev/null 2&gt;&amp;1 if [ $? -ne 0 ]; then logger -t wp-blacklister &quot;Blacklisting $addr for &gt; $spam_count WP spammed comments&quot; iptables -A BLACKLIST -s $addr -j DROP fi done &lt;/code&gt; This technique has one disadvantage in that you can occasionally block some users that you don&#39;t want to. This is rare but could occur if a spammer comes from the same IP address as a genuine user: for example if they are both using the same proxy server or gateway. As a result, it is necessary to flush the BLACKLIST firewall chain periodically - removing all items from it. This usually works ok because once persistent spammers realise that they are no longer able to connect to your site, they give up and try someone else&#39;s site instead. You can flush the BLACKLIST chain by setting up a scheduled job to execute the following command: iptables -F BLACKLIST Hopefully, this should start to reduce your WordPress spam fairly quickly.","@type":"BlogPosting","url":"/uncategorized/2012/02/27/a-simple-technique-for-reducing-self-hosted-wordpress-comment-spam.html","headline":"A simple technique for reducing self-hosted WordPress comment spam","dateModified":"2012-02-27T09:25:28+00:00","datePublished":"2012-02-27T09:25:28+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"/uncategorized/2012/02/27/a-simple-technique-for-reducing-self-hosted-wordpress-comment-spam.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="cwpad.com" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">cwpad.com</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a><a class="page-link" href="/stuff-i-made/">Stuff I have made</a><a class="page-link" href="/blog">Blog</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">A simple technique for reducing self-hosted WordPress comment spam</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2012-02-27T09:25:28+00:00" itemprop="datePublished">Feb 27, 2012
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{"display_name"=>"jacksonps4", "login"=>"jacksonps4", "email"=>"chris@indigenously.co.uk", "url"=>""}</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Anyone with a WordPress blog will no doubt have experienced that once Google indexes it at all, lots of comments start appearing. Often the comments look like they could be genuine and are often complimentary of your blog or writing style. Sometimes they offer what appears to be constructive feedback on your site not functioning in a particular browser. The one thing that they usually have in common is that they tend to have a link or email address that points to something spammy. The links usually want you to buy or view something that you do not want to.</p>
+<p>The good news is that if your blog is self-hosted, there are some simple techniques for reducing comment spam. The following instructions are for Linux users who have root access to their server.</p>
+<p>If you have comment approvals turned on, you'll have to manually approve comments before they are displayed. This gives you the added advantage that when you see comments that appear to be spam, you can mark them as such. WordPress actually records the IP address of all commenters as well as whether or not they are spam in its database. This means that once there are more than a couple of spammy comments from the same IP, it is relatively straightforward to blacklist them. A simple method to do this is to add them to a firewall rule chain which causes all packets from the specified IP to be dropped. This not only stops them from adding comment spam, it also stops them from viewing your site altogether. </p>
+<p>To set this up on Linux, you need to create a chain in iptables (as root):<br />
+<code><br />
+$ /sbin/iptables -N BLACKLIST<br />
+</code></p>
+<p>Then you can schedule the following script to run every couple of hours.<br />
+<code><br />
+#!/bin/sh</p>
+<p># database credentials<br />
+username='wordpress_user'<br />
+details='wordpress_pwd'<br />
+db_name='wordpress_dbname'</p>
+<p># tune this to your preference: will blacklist an IP address after n comments marked as spam<br />
+spam_count=2</p>
+<p>query="select comment_author_IP, comment_approved, count(*) from wp_comments group by comment_author_IP, comment_approved having count(*) > $spam_count order by count(*) desc"</p>
+<p>blacklist=`mysql -D ${db_name} -u ${username} -p${details} << --EOF-- | grep spam | awk '{print $1}'<br />
+$query<br />
+--EOF--`</p>
+<p>blacklisted=`iptables -L BLACKLIST -vn | awk '$3 ~ /DROP/ { print $8 }'`<br />
+for addr in $blacklist; do<br />
+        echo $blacklisted | grep $addr > /dev/null 2>&1<br />
+        if [ $? -ne 0 ]; then<br />
+                logger -t wp-blacklister "Blacklisting $addr for > $spam_count WP spammed comments"<br />
+                iptables -A BLACKLIST -s $addr -j DROP<br />
+        fi<br />
+done<br />
+</code></p>
+<p>This technique has one disadvantage in that you can occasionally block some users that you don't want to. This is rare but could occur if a spammer comes from the same IP address as a genuine user: for example if they are both using the same proxy server or gateway. As a result, it is necessary to flush the BLACKLIST firewall chain periodically - removing all items from it. This usually works ok because once persistent spammers realise that they are no longer able to connect to your site, they give up and try someone else's site instead. </p>
+<p>You can flush the BLACKLIST chain by setting up a scheduled job to execute the following command:<br />
+<code><br />
+iptables -F BLACKLIST<br />
+</code></p>
+<p>Hopefully, this should start to reduce your WordPress spam fairly quickly.</p>
+
+  </div><a class="u-url" href="/uncategorized/2012/02/27/a-simple-technique-for-reducing-self-hosted-wordpress-comment-spam.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">cwpad.com</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">cwpad.com</li><li><a class="u-email" href="mailto:chris@indigenously.co.uk">chris@indigenously.co.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jacksonps4</span></a></li><li><a href="https://instagram.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#instagram"></use></svg> <span class="username">jacksonps4</span></a></li><li><a href="https://www.linkedin.com/in/chriswraith"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username">chriswraith</span></a></li><li><a href="https://www.twitter.com/jacksonps4"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jacksonps4</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>The homepage of Chris Wraith.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

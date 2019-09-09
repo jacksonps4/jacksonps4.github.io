@@ -1,11 +1,53 @@
 class Authentication {
-    onSignIn(googleUser) {
-        let profile = googleUser.getBasicProfile();
+    constructor(refreshCallback) {
+      this.refreshCallback = refreshCallback;
+    }
 
-        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        console.log('Name: ' + profile.getName());
-        console.log('Image URL: ' + profile.getImageUrl());
-        console.log('Email: ' + profile.getEmail());
-        console.log('Token: ' + googleUser.getAuthResponse().id_token)
+    init() {
+      fetch('/session/check', {
+        credentials: 'include'
+      }).then(response => {
+        if (response.status === 401) {
+          this.signIn();
+        } else {
+          this.refreshCallback();
+        }
+      });
+    }
+
+    signIn() {
+      gapi.load('auth2', () => {
+        gapi.auth2.init({
+          'client_id': '642857611880-lmm7ub4enbshgk0o5de7tdbftfnhptb3.apps.googleusercontent.com',
+          'ux_mode': 'popup'
+        }).then(googleAuth => {
+          if (!googleAuth.isSignedIn.get()) {
+            googleAuth.signIn({
+              scope: 'profile email'
+            }).then(this.onSignIn);
+          } else {
+            this.onSignIn(gapi.auth2.getAuthInstance());
+          }
+        }, error => {
+          console.error(error);
+        });
+      });
+    }
+
+    onSignIn(googleAuth) {
+      let user = googleAuth.currentUser.get();
+      this.exchangeJwtForAccessToken(user.getAuthResponse().id_token);
+    }
+
+    exchangeJwtForAccessToken(jwt) {
+      fetch('/session/create', {
+        headers: {
+          'Authorization': 'Google ' + jwt
+        }
+      }).then(function (response) {
+        return response.json();
+      }).then(response => {
+        this.refreshCallback();
+      });
     }
 }

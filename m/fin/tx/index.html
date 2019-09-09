@@ -22,44 +22,24 @@
     <script src="Chart.bundle.js"></script>
 
     <!-- Google APIs -->
-    <meta name="google-signin-client_id" content="642857611880-5qro3tqn16hegvf9jin4ajfdnjpp2dje.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
-
     <!-- this page -->
-    <script src="fin-apis.js" crossorigin="use-credentials"></script>
-    <script src="TransactionApp.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="FinApis.js" crossorigin="use-credentials"></script>
+    <script src="TransactionsApp.js"></script>
     <script src="Authentication.js"></script>
+
+    <script async defer>
+      function init() {
+        let transactionApp = new TransactionsApp();
+        let authentication = new Authentication(() => transactionApp.init());
+        authentication.init();
+      }
+    </script>
 </head>
-<body onload="new TransactionsApp()">
-<style>
-    table tbody tr td, table thead tr th {
-    }
-
-    #monthly {
-        max-width: 500px;
-        max-height: 500px;
-    }
-
-    .sync {
-        height: 18px;
-        width: 18px;
-    }
-
-    #transactionPagination {
-        float: right;
-    }
-
-    .balance {
-        font-weight: bolder;
-        margin-left: 20px;
-    }
-
-    .transactionDetails {
-        font-size: x-small;
-        display: block;
-    }
-</style>
+<body onload="init()">
 
 <!--
 integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4QqQ"
@@ -77,9 +57,6 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
         </li>
         <li class="nav-item">
             <a class="nav-link" id="annual-tab" data-toggle="tab" href="#annual" role="tab" aria-controls="annual" aria-selected="false">Annual spending</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="account-tab" data-toggle="tab" href="#account" role="tab" aria-controls="account" aria-selected="false">Account</a>
         </li>
     </ul>
     <div class="tab-content" id="myTabContent">
@@ -139,20 +116,6 @@ integrity="sha384-uvr6jogqrjvABzptprq3UyhfHINHrHNGjraIm6JnEmumiZQslBfsEwkY2X+W4Q
                 <tbody id="analysis">
                 </tbody>
             </table>
-        </div>
-        <div class="tab-pane fade" id="account" role="tabpanel" aria-labelledby="account-tab">
-            <script>
-                function onSignIn(googleUser) {
-                    let profile = googleUser.getBasicProfile();
-
-                    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-                    console.log('Name: ' + profile.getName());
-                    console.log('Image URL: ' + profile.getImageUrl());
-                    console.log('Email: ' + profile.getEmail());
-                    console.log('Token: ' + googleUser.getAuthResponse().id_token)
-                }
-            </script>
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>
         </div>
     </div>
 </div>
