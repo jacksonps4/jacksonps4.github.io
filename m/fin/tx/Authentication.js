@@ -40,7 +40,7 @@ class Authentication {
     }
 
     exchangeJwtForAccessToken(jwt) {
-      fetch('/session/create', {
+      fetch('https://api.cwpad.com/session/create', {
         headers: {
           'Authorization': 'Google ' + jwt
         }
